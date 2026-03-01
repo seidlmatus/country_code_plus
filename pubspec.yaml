@@ -1,6 +1,9 @@
 name: country_codes_plus
 description: Country code plus is a helper package that provides country details given a particular localization, such as dial codes, ISO 3166 codes (alpha-2, alpha-3) and country names.
-version: 5.0.0
+version: 5.0.1
+homepage: https://github.com/seidlmatus/country_code_plus
+repository: https://github.com/seidlmatus/country_code_plus
+issue_tracker: https://github.com/seidlmatus/country_code_plus/issues
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -13,7 +16,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  lints: ^4.0.0
+  lints: ^6.1.0
 
 flutter:
   plugin:

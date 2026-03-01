@@ -1,0 +1,17 @@
+# Repository-only files
+AGENTS.md
+IMPROVEMENTS_TODO.md
+
+# Development and CI metadata
+.github/
+.idea/
+
+# Local tooling outputs
+.dart_tool/
+build/
+.packages
+.pub/
+
+# Lock files are not required for library consumers
+pubspec.lock
+example/pubspec.lock
