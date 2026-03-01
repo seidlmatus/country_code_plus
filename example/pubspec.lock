@@ -41,13 +41,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
-  country_codes:
-    dependency: "direct dev"
+  country_codes_plus:
+    dependency: "direct main"
     description:
       path: ".."
       relative: true
     source: path
-    version: "4.0.0"
+    version: "5.0.0"
   cupertino_icons:
     dependency: "direct main"
     description:

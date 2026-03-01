@@ -2,8 +2,15 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze-and-test:
@@ -16,6 +23,8 @@ jobs:
           cache: true
       - name: Install Dependencies
         run: flutter pub get
+      - name: Check Formatting
+        run: dart format --output=none --set-exit-if-changed .
       - name: Analyze
         run: dart analyze
       - name: Run Tests
@@ -27,6 +36,7 @@ jobs:
           path: coverage/lcov.info
 
   android-build:
+    needs: analyze-and-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -42,6 +52,7 @@ jobs:
         working-directory: example
 
   ios-build:
+    needs: analyze-and-test
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -51,6 +62,9 @@ jobs:
           cache: true
       - name: Install Example Dependencies
         run: flutter pub get
+        working-directory: example
+      - name: Regenerate Podfile If Needed
+        run: rm -f ios/Podfile
         working-directory: example
       - name: Build iOS Example
         run: flutter build ios --no-codesign
