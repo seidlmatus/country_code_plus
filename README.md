@@ -25,6 +25,16 @@ Then run:
 flutter pub get
 ```
 
+## Compatibility Matrix
+| Component | Supported |
+| --- | --- |
+| Dart SDK | `>=3.0.0 <4.0.0` |
+| Flutter SDK | `>=3.7.0` |
+| Android | Supported |
+| iOS | Supported |
+| macOS | Supported |
+| Web | Not officially supported (`init` should be avoided on web) |
+
 ## Quick Start
 ```dart
 import 'package:country_codes_plus/country_codes_plus.dart';
@@ -114,6 +124,10 @@ TextFormField(
 
 ## Contributing
 - PRs are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+- Use issue templates for bug reports and feature requests.
+
+## Security
+- For vulnerability reporting, see [SECURITY.md](SECURITY.md).
 
 ## License
 MIT, see [LICENSE](LICENSE).

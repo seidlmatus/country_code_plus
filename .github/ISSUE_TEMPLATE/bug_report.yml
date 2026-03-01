@@ -1,0 +1,52 @@
+name: Bug report
+description: Report a reproducible problem in country_codes_plus.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this issue.
+        Please provide enough detail so we can reproduce it quickly.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the bug and expected behavior.
+      placeholder: A clear and concise description.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include a minimal reproducible example if possible.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: flutter_version
+    attributes:
+      label: Flutter version
+      placeholder: e.g. Flutter 3.29.0 • channel stable
+    validations:
+      required: true
+  - type: input
+    id: dart_version
+    attributes:
+      label: Dart version
+      placeholder: e.g. Dart 3.7.0
+    validations:
+      required: true
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Affected platform(s)
+      options:
+        - label: Android
+        - label: iOS
+        - label: macOS
+        - label: Other

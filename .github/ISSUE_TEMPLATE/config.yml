@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and usage help
+    url: https://github.com/seidlmatus/country_code_plus/discussions
+    about: Use discussions for support questions and general usage help.
