@@ -1,5 +1,15 @@
 # Release Notes
 
+## 5.0.2 - 2026-03-01
+
+Highlights:
+- Improve pub.dev package page quality with updated README badges and installation snippet.
+- Replace the generic example README with clear package-specific guidance.
+- Align repository metadata checks for the next pub.dev analysis run.
+
+Notes:
+- No API changes; this is a documentation and release-quality update.
+
 ## 5.0.1 - 02/09/2026
 
 Highlights:

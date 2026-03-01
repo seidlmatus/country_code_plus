@@ -3,6 +3,7 @@
 A Flutter plugin that provides country details (ISO codes, dial codes, names) based on a `Locale`.
 
 [![CI](https://github.com/seidlmatus/country_code_plus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/seidlmatus/country_code_plus/actions/workflows/ci.yml)
+[![pub package](https://img.shields.io/pub/v/country_codes_plus.svg)](https://pub.dev/packages/country_codes_plus)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## Features
@@ -16,7 +17,7 @@ Add the dependency in `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  country_codes_plus: ^5.0.0
+  country_codes_plus: ^5.0.2
 ```
 
 Then run:

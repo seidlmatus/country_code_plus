@@ -1,16 +1,17 @@
-# country_codes_plus_example
+# country_codes_plus example
 
-Demonstrates how to use the country_codes_plus plugin.
+Minimal Flutter app that demonstrates how to initialize `country_codes_plus`
+and display country data resolved from the current locale.
 
-## Getting Started
+## Run
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get
+flutter run
+```
 
-A few resources to get you started if this is your first Flutter project:
+## What it shows
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- `CountryCodes.init()` initialization flow
+- reading device locale with `CountryCodes.getDeviceLocale()`
+- resolving country details (`alpha2`, `alpha3`, dial code, name)

@@ -1,3 +1,8 @@
+## [5.0.2] - 2026-03-01
+* Improve package documentation for pub.dev (README badges and install instructions).
+* Replace default example README with package-specific usage notes.
+* Keep repository metadata aligned for pub.dev score validation.
+
 ## [5.0.1] - 02/09/2026
 * Fix Android plugin registration by aligning the main class location with the Android package.
 * Add `country_codes_plus.dart` entrypoint and keep the legacy entrypoint as a re-export.
