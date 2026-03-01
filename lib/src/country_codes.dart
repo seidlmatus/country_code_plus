@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:country_codes_plus/src/codes.dart';
 import 'package:country_codes_plus/src/country_details.dart';
+import 'package:country_codes_plus/src/subdivision_details.dart';
+import 'package:country_codes_plus/src/subdivisions.dart';
 import 'package:country_codes_plus/src/sub_regions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -126,6 +128,34 @@ class CountryCodes {
         .map((entry) => CountryDetails.fromMap(
             entry.value, _localizedCountryNames[entry.key]))
         .toList();
+  }
+
+  /// Returns a list of subdivisions for the given country alpha-2 code.
+  /// Codes follow ISO 3166-2 format (e.g. `SK-BL`, `CZ-10`).
+  static List<CountrySubdivision> subdivisionsForCountry(String alpha2) {
+    final normalizedAlpha2 = alpha2.toUpperCase();
+    final entries = subdivisionsByCountry[normalizedAlpha2] ?? const [];
+    return entries.map(CountrySubdivision.fromMap).toList();
+  }
+
+  /// Returns all available subdivisions across supported countries.
+  static List<CountrySubdivision> subdivisions() {
+    return subdivisionsByCountry.values
+        .expand((entries) => entries)
+        .map(CountrySubdivision.fromMap)
+        .toList();
+  }
+
+  /// Returns subdivision details for an ISO 3166-2 subdivision code.
+  /// Example: `SK-BL`, `CZ-10`.
+  static CountrySubdivision? subdivisionFromCode(String subdivisionCode) {
+    final normalizedCode = subdivisionCode.toUpperCase();
+    final details = subdivisionsByCode[normalizedCode];
+    if (details == null) {
+      return null;
+    }
+
+    return CountrySubdivision.fromMap(details);
   }
 
   /// Returns the `CountryDetails` for the given [locale]. If not provided,

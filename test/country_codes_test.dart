@@ -73,6 +73,62 @@ void main() {
     });
   });
 
+  group('country list', () {
+    test('includes Kosovo in countryCodes()', () {
+      final allCountries = CountryCodes.countryCodes();
+      final kosovo =
+          allCountries.where((country) => country.alpha2Code == 'XK');
+
+      expect(kosovo.length, 1);
+      expect(kosovo.single.name, 'Kosovo');
+      expect(kosovo.single.dialCode, '+383');
+    });
+  });
+
+  group('subdivisions', () {
+    test('returns all supported subdivisions', () {
+      final subdivisions = CountryCodes.subdivisions();
+
+      expect(subdivisions.length, greaterThan(5000));
+      expect(subdivisions.any((entry) => entry.code == 'XK-01'), isTrue);
+      expect(subdivisions.any((entry) => entry.code == 'SK-BL'), isTrue);
+    });
+
+    test('returns subdivisions for Slovakia', () {
+      final subdivisions = CountryCodes.subdivisionsForCountry('sk');
+
+      expect(subdivisions.length, 8);
+      expect(subdivisions.any((entry) => entry.code == 'SK-BL'), isTrue);
+      expect(subdivisions.any((entry) => entry.code == 'SK-KI'), isTrue);
+    });
+
+    test('returns subdivision details from code', () {
+      final subdivision = CountryCodes.subdivisionFromCode('cz-10');
+
+      expect(subdivision, isNotNull);
+      expect(subdivision?.countryAlpha2Code, 'CZ');
+      expect(subdivision?.name, 'Praha, Hlavní město');
+      expect(subdivision?.type, isNotNull);
+    });
+
+    test('returns null for unknown subdivision code', () {
+      final subdivision = CountryCodes.subdivisionFromCode('SK-XX');
+
+      expect(subdivision, isNull);
+    });
+
+    test('supports subdivision lookup for all countries in codes map', () {
+      final countries = CountryCodes.countryCodes();
+
+      for (final country in countries) {
+        final alpha2 = country.alpha2Code;
+        expect(alpha2, isNotNull);
+        expect(() => CountryCodes.subdivisionsForCountry(alpha2!),
+            returnsNormally);
+      }
+    });
+  });
+
   group('platform channel', () {
     const channel = MethodChannel('country_codes_plus');
 

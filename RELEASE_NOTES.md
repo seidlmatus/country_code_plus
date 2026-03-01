@@ -1,5 +1,16 @@
 # Release Notes
 
+## 5.0.4 - 2026-03-01
+
+Highlights:
+- Add Kosovo (`XK`) to the built-in country list returned by `CountryCodes.countryCodes()`.
+- Include alpha-3 code (`XKX`), dial code (`+383`), and locale mapping (`sq_XK`).
+- Add subdivision lookup APIs: `subdivisions()`, `subdivisionsForCountry(alpha2)`, and `subdivisionFromCode(code)`.
+- Add ISO 3166-2 subdivision datasets for all supported countries in the package, with manual fallback entries for `XK`.
+
+Notes:
+- Adds one new country entry with no breaking API changes.
+
 ## 5.0.3 - 2026-03-01
 
 Highlights:

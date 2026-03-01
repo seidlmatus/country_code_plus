@@ -15,3 +15,5 @@ flutter run
 - `CountryCodes.init()` initialization flow
 - reading device locale with `CountryCodes.getDeviceLocale()`
 - resolving country details (`alpha2`, `alpha3`, dial code, name)
+- listing subdivisions via `CountryCodes.subdivisionsForCountry(alpha2)`
+- finding one subdivision by code via `CountryCodes.subdivisionFromCode(code)`

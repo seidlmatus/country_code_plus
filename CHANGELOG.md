@@ -1,3 +1,9 @@
+## [5.0.4] - 2026-03-01
+* Add Kosovo (`XK`) to the country list returned by `CountryCodes.countryCodes()`.
+* Include Kosovo metadata: alpha-3 `XKX`, dial code `+383`, and locale mapping `sq_XK`.
+* Add subdivisions API with ISO 3166-2 lookup methods.
+* Add subdivision datasets for all supported countries, with manual fallback entries for Kosovo (`XK`).
+
 ## [5.0.3] - 2026-03-01
 * Add Swift Package Manager manifests for iOS and macOS plugin targets.
 * Add Swift sources for SPM targets using the same platform channel behavior as existing plugin code.

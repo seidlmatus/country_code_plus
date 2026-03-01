@@ -9,6 +9,7 @@ A Flutter plugin that provides country details (ISO codes, dial codes, names) ba
 ## Features
 - Resolve country details from device locale or a provided `Locale`.
 - Access ISO 3166 alpha-2/alpha-3 codes and dial codes.
+- Access ISO 3166-2 subdivisions for supported countries.
 - Optional localized country names with `init`.
 - Input formatter for phone dial codes.
 
@@ -17,7 +18,7 @@ Add the dependency in `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  country_codes_plus: ^5.0.3
+  country_codes_plus: ^5.0.4
 ```
 
 Then run:
@@ -93,6 +94,15 @@ English defaults to `US`.
 ```dart
 final CountryDetails sk = CountryCodes.detailsFromAlpha2('SK');
 print(sk.dialCode); // +421
+```
+
+### Subdivisions (ISO 3166-2)
+```dart
+final skSubdivisions = CountryCodes.subdivisionsForCountry('SK');
+print(skSubdivisions.first.code); // e.g. SK-BL
+
+final subdivision = CountryCodes.subdivisionFromCode('CZ-10');
+print(subdivision?.name); // Hlavni mesto Praha
 ```
 
 ### Error handling

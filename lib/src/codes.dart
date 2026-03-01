@@ -1707,6 +1707,13 @@ const Map<String, dynamic> codes = {
     "dial_code": "+212",
     "country_code": "es_EH"
   },
+  "XK": {
+    "name": "Kosovo",
+    "alpha2Code": "XK",
+    "alpha3Code": "XKX",
+    "dial_code": "+383",
+    "country_code": "sq_XK"
+  },
   "YE": {
     "name": "Yemen",
     "alpha2Code": "YE",
