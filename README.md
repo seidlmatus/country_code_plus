@@ -2,6 +2,9 @@
 
 A Flutter plugin that provides country details (ISO codes, dial codes, names) based on a `Locale`.
 
+[![CI](https://github.com/seidlmatus/country_code_plus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/seidlmatus/country_code_plus/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 ## Features
 - Resolve country details from device locale or a provided `Locale`.
 - Access ISO 3166 alpha-2/alpha-3 codes and dial codes.
@@ -20,6 +23,24 @@ Then run:
 
 ```bash
 flutter pub get
+```
+
+## Quick Start
+```dart
+import 'package:country_codes_plus/country_codes_plus.dart';
+
+Future<void> setup() async {
+  await CountryCodes.init();
+
+  final locale = CountryCodes.getDeviceLocale();
+  final details = CountryCodes.detailsForLocale();
+
+  print(locale); // e.g. en_US
+  print(details.alpha2Code); // e.g. US
+  print(details.alpha3Code); // e.g. USA
+  print(details.dialCode); // e.g. +1
+  print(details.name); // e.g. United States
+}
 ```
 
 ## Usage
@@ -84,5 +105,15 @@ TextFormField(
 - Android, iOS, macOS: supported
 - Web: not officially supported (avoid calling `init` on web)
 
+## Migration
+- If you are upgrading from `country_codes`, update dependency and imports to `country_codes_plus`.
+- Legacy import `package:country_codes_plus/country_code_plus.dart` remains available as a re-export.
+
+## Example App
+- See the example app in [`example/`](example).
+
+## Contributing
+- PRs are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
+
 ## License
-MIT
+MIT, see [LICENSE](LICENSE).
