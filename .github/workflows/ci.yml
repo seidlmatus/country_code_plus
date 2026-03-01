@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install Dependencies
+        run: flutter pub get
+      - name: Analyze
+        run: dart analyze
+      - name: Run Tests
+        run: flutter test
+
+  android-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install Example Dependencies
+        run: flutter pub get
+        working-directory: example
+      - name: Build Android Example
+        run: flutter build apk --debug
+        working-directory: example
+
+  ios-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install Example Dependencies
+        run: flutter pub get
+        working-directory: example
+      - name: Build iOS Example
+        run: flutter build ios --no-codesign
+        working-directory: example
