@@ -1,0 +1,202 @@
+import 'dart:async';
+
+import 'package:country_codes_plus/src/codes.dart';
+import 'package:country_codes_plus/src/country_details.dart';
+import 'package:country_codes_plus/src/sub_regions.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+
+class CountryCodes {
+  static const MethodChannel _channel = const MethodChannel('country_codes_plus');
+  static Locale? _deviceLocale;
+  static Map<String, String> _localizedCountryNames = const {};
+
+  static const Map<String, String> _languageDefaults = {
+    'en': 'US',
+  };
+
+  static String? _resolveLocale(Locale? locale) {
+    locale ??= _deviceLocale;
+    if (locale == null) {
+      assert(false, '''
+         Locale cannot be null. If you are using an iOS simulator, please, make sure you go to region settings and select any country (even if it\'s already selected) because otherwise your country might be null.
+         If you didn\'t provide one, please make sure you call init before using Country Details
+        ''');
+      return null;
+    }
+
+    String? countryCode = locale.countryCode;
+    if (countryCode == null || countryCode.isEmpty) {
+      countryCode = _countryCodeFromLanguage(locale.languageCode) ?? _deviceLocale?.countryCode;
+    }
+
+    if (countryCode == null || countryCode.isEmpty) {
+      assert(false, '''
+         Locale country code cannot be null or empty. Provide a locale with a region (e.g. Locale('en', 'US'))
+         or call init() to use the device locale.
+        ''');
+      return null;
+    }
+
+    if (!codes.containsKey(countryCode)) {
+      countryCode = subRegionToCountryCode[countryCode] ?? countryCode;
+    }
+
+    return countryCode;
+  }
+
+  static String? _countryCodeFromLanguage(String languageCode) {
+    final normalized = languageCode.toLowerCase();
+    final defaultCountry = _languageDefaults[normalized];
+
+    if (defaultCountry != null && codes.containsKey(defaultCountry)) {
+      return defaultCountry;
+    }
+
+    final languageAsCountry = normalized.toUpperCase();
+    if (codes.containsKey(languageAsCountry)) {
+      final data = Map<String, dynamic>.from(codes[languageAsCountry] as Map);
+      final countryCode = data['country_code'] as String?;
+      if (countryCode != null && countryCode.startsWith('${normalized}_')) {
+        return languageAsCountry;
+      }
+    }
+
+    for (final entry in codes.entries) {
+      final data = Map<String, dynamic>.from(entry.value as Map);
+      final countryCode = data['country_code'] as String?;
+      if (countryCode != null && countryCode.startsWith('${normalized}_')) {
+        return entry.key;
+      }
+    }
+
+    return null;
+  }
+
+  /// Inits the underlying plugin channel and fetch current's device locale to be ready
+  /// to use synchronously when required.
+  ///
+  /// If you never plan to provide a `locale` directly, you must call and await this
+  /// by calling `await CountryCodes.init();` before accessing any other method.
+  ///
+  /// Optionally, you may want to provide your [appLocale] to access localized
+  /// country name (eg. if your app is in English, display Italy instead of Italia).
+  ///
+  /// Example:
+  /// ```dart
+  /// CountryCodes.init(Localizations.localeOf(context))
+  /// ```
+  /// This will default to device's language if none is provided.
+  static Future<bool> init([Locale? appLocale]) async {
+    final List<dynamic>? locale = List<dynamic>.from(await (_channel.invokeMethod('getLocale', appLocale?.toLanguageTag())));
+    if (locale != null && locale.length >= 2) {
+      String countryCode = locale[1];
+
+      if (!codes.containsKey(countryCode)) {
+        countryCode = subRegionToCountryCode[countryCode] ?? countryCode;
+      }
+
+      _deviceLocale = Locale(locale[0], countryCode);
+      _localizedCountryNames = Map.from(locale[2]);
+    }
+    return _deviceLocale != null;
+  }
+
+  /// Returns the current device's `Locale`
+  /// Eg. `Locale('en','US')`
+  static Locale? getDeviceLocale() {
+    assert(_deviceLocale != null, 'Please, make sure you call await init() before calling getDeviceLocale()');
+    return _deviceLocale;
+  }
+
+  /// A list of dial codes for every country
+  static List<String?> dialNumbers() {
+    return codes.values.map((each) => CountryDetails.fromMap(each).dialCode).toList();
+  }
+
+  /// A list of country data for every country
+  static List<CountryDetails> countryCodes() {
+    return codes.entries.map((entry) => CountryDetails.fromMap(entry.value, _localizedCountryNames[entry.key])).toList();
+  }
+
+  /// Returns the `CountryDetails` for the given [locale]. If not provided,
+  /// the device's locale will be used instead.
+  /// Have in mind that this is different than specifying `supportedLocale`s
+  /// on your app.
+  /// Exposed properties are the `name`, `alpha2Code`, `alpha3Code` and `dialCode`
+  ///
+  /// Example:
+  /// ```dart
+  /// "name": "United States",
+  /// "alpha2Code": "US",
+  /// "dial_code": "+1",
+  /// ```
+  static CountryDetails detailsForLocale([Locale? locale]) {
+    String? code = _resolveLocale(locale);
+    return CountryDetails.fromMap(codes[code!], _localizedCountryNames[code]);
+  }
+
+  /// Returns the `CountryDetails` for the given country alpha2 code.
+  static CountryDetails detailsFromAlpha2(String alpha2) {
+    return CountryDetails.fromMap(codes.entries.where((entry) => entry.key == alpha2).single.value);
+  }
+
+  /// Returns the ISO 3166-1 `alpha2Code` for the given [locale].
+  /// If not provided, device's locale will be used instead.
+  /// You can read more about ISO 3166-1 codes [here](https://en.wikipedia.org/wiki/ISO_3166-1)
+  ///
+  /// Example: (`US`, `PT`, etc.)
+  static String? alpha2Code([Locale? locale]) {
+    try {
+      String? code = _resolveLocale(locale);
+
+      if (code == null) {
+        return null;
+      }
+
+      return CountryDetails.fromMap(codes[code], _localizedCountryNames[code]).alpha2Code;
+    } catch (ex) {
+      debugPrint('Failed to get alpha2 code for locale: $locale');
+      return null;
+    }
+  }
+
+  /// Returns the `dialCode` for the given [locale] or device's locale, if not provided.
+  ///
+  /// Example: (`+1`, `+351`, etc.)
+  static String? dialCode([Locale? locale]) {
+    try {
+      String? code = _resolveLocale(locale);
+
+      if (code == null) {
+        return null;
+      }
+
+      return CountryDetails.fromMap(codes[code], _localizedCountryNames[code]).dialCode;
+    } catch (ex) {
+      debugPrint('Failed to get dial code for locale: $locale');
+      return null;
+    }
+  }
+
+  /// Returns the exended `name` for the given [locale] or if not provided, device's locale.
+  ///
+  /// Example: (`United States`, `Portugal`, etc.)
+  static String? name({Locale? locale, VoidCallback? onInvalidLocale}) {
+    try {
+      String? code = _resolveLocale(locale);
+
+      if (code == null) {
+        return null;
+      }
+
+      return CountryDetails.fromMap(codes[code], _localizedCountryNames[code]).name;
+    } catch (ex) {
+      if (onInvalidLocale != null) {
+        onInvalidLocale();
+      }
+      debugPrint('Failed to get name for locale: $locale');
+      return null;
+    }
+  }
+}

@@ -1,0 +1,3 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.donit.flutter.plugin.countrycodes.country_codes_plus">
+</manifest>
