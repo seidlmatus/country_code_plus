@@ -63,9 +63,6 @@ jobs:
       - name: Install Example Dependencies
         run: flutter pub get
         working-directory: example
-      - name: Regenerate Podfile If Needed
-        run: rm -f ios/Podfile
-        working-directory: example
       - name: Build iOS Example
         run: flutter build ios --no-codesign
         working-directory: example
