@@ -13,7 +13,8 @@ void main() {
         final key = entry.key;
         final data = Map<String, dynamic>.from(entry.value as Map);
 
-        expect(RegExp(r'^[A-Z]{2}$').hasMatch(key), isTrue, reason: 'Invalid key: $key');
+        expect(RegExp(r'^[A-Z]{2}$').hasMatch(key), isTrue,
+            reason: 'Invalid key: $key');
         expect(data['alpha2Code'], key, reason: 'alpha2Code mismatch for $key');
       }
     });
@@ -25,9 +26,12 @@ void main() {
         final data = Map<String, dynamic>.from(entry.value as Map);
         final alpha3 = data['alpha3Code'] as String?;
 
-        expect(alpha3, isNotNull, reason: 'Missing alpha3Code for ${entry.key}');
-        expect(RegExp(r'^[A-Z]{3}$').hasMatch(alpha3!), isTrue, reason: 'Invalid alpha3Code for ${entry.key}');
-        expect(seen.add(alpha3), isTrue, reason: 'Duplicate alpha3Code: $alpha3');
+        expect(alpha3, isNotNull,
+            reason: 'Missing alpha3Code for ${entry.key}');
+        expect(RegExp(r'^[A-Z]{3}$').hasMatch(alpha3!), isTrue,
+            reason: 'Invalid alpha3Code for ${entry.key}');
+        expect(seen.add(alpha3), isTrue,
+            reason: 'Duplicate alpha3Code: $alpha3');
       }
     });
 
@@ -37,8 +41,10 @@ void main() {
         final dial = data['dial_code'] as String?;
 
         expect(dial, isNotNull, reason: 'Missing dial_code for ${entry.key}');
-        expect(dial, dial!.trim(), reason: 'dial_code has surrounding whitespace for ${entry.key}');
-        expect(RegExp(r'^\+[0-9 ]+$').hasMatch(dial), isTrue, reason: 'Invalid dial_code for ${entry.key}');
+        expect(dial, dial!.trim(),
+            reason: 'dial_code has surrounding whitespace for ${entry.key}');
+        expect(RegExp(r'^\+[0-9 ]+$').hasMatch(dial), isTrue,
+            reason: 'Invalid dial_code for ${entry.key}');
       }
     });
 
@@ -47,8 +53,10 @@ void main() {
         final data = Map<String, dynamic>.from(entry.value as Map);
         final countryCode = data['country_code'] as String?;
 
-        expect(countryCode, isNotNull, reason: 'Missing country_code for ${entry.key}');
-        expect(RegExp(r'^[a-z]{2}_[A-Z]{2}$').hasMatch(countryCode!), isTrue, reason: 'Invalid country_code for ${entry.key}');
+        expect(countryCode, isNotNull,
+            reason: 'Missing country_code for ${entry.key}');
+        expect(RegExp(r'^[a-z]{2}_[A-Z]{2}$').hasMatch(countryCode!), isTrue,
+            reason: 'Invalid country_code for ${entry.key}');
       }
     });
   });
@@ -69,11 +77,16 @@ void main() {
     const channel = MethodChannel('country_codes_plus');
 
     setUp(() {
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
         channel,
         (call) async {
           if (call.method == 'getLocale') {
-            return ['en', 'US', {'US': 'United States'}];
+            return [
+              'en',
+              'US',
+              {'US': 'United States'}
+            ];
           }
           return null;
         },
@@ -81,7 +94,8 @@ void main() {
     });
 
     tearDown(() async {
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
         channel,
         null,
       );

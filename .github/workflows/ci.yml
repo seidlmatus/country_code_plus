@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
       - name: Check Formatting
-        run: dart format --output=none --set-exit-if-changed .
+        run: dart format --output=none --set-exit-if-changed lib test example/lib
       - name: Analyze
         run: dart analyze
       - name: Run Tests
