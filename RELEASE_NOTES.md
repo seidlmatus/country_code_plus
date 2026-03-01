@@ -1,5 +1,14 @@
 # Release Notes
 
+## 5.0.3 - 2026-03-01
+
+Highlights:
+- Add `Package.swift` manifests for iOS and macOS under the plugin package layout expected by Flutter tooling.
+- Add Swift source targets for SPM with equivalent method-channel behavior.
+
+Notes:
+- No Dart API changes; this release improves Apple platform package integration metadata.
+
 ## 5.0.2 - 2026-03-01
 
 Highlights:

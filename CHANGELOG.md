@@ -1,3 +1,7 @@
+## [5.0.3] - 2026-03-01
+* Add Swift Package Manager manifests for iOS and macOS plugin targets.
+* Add Swift sources for SPM targets using the same platform channel behavior as existing plugin code.
+
 ## [5.0.2] - 2026-03-01
 * Improve package documentation for pub.dev (README badges and install instructions).
 * Replace default example README with package-specific usage notes.

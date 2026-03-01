@@ -17,7 +17,7 @@ Add the dependency in `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  country_codes_plus: ^5.0.2
+  country_codes_plus: ^5.0.3
 ```
 
 Then run:
@@ -115,6 +115,7 @@ TextFormField(
 ## Platform support
 - Android, iOS, macOS: supported
 - Web: not officially supported (avoid calling `init` on web)
+- Swift Package Manager manifests are included for iOS and macOS plugin targets.
 
 ## Migration
 - If you are upgrading from `country_codes`, update dependency and imports to `country_codes_plus`.
