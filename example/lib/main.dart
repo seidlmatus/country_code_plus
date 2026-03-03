@@ -119,8 +119,30 @@ class CountryCodesExampleApp extends StatelessWidget {
                 SizedBox(
                   width: 200.0,
                   child: TextFormField(
+                    decoration:
+                        const InputDecoration(labelText: 'Default formatter'),
                     keyboardType: TextInputType.phone,
                     inputFormatters: [DialCodeFormatter()],
+                  ),
+                ),
+                const SizedBox(height: 12.0),
+                SizedBox(
+                  width: 200.0,
+                  child: TextFormField(
+                    decoration:
+                        const InputDecoration(labelText: 'With separator'),
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [DialCodeFormatter(locale, ' ')],
+                  ),
+                ),
+                const SizedBox(height: 12.0),
+                SizedBox(
+                  width: 200.0,
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                        labelText: 'Force package dial code'),
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [DialCodeFormatter(locale, '', false)],
                   ),
                 ),
               ],

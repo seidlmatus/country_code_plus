@@ -22,3 +22,4 @@ flutter run
 - finding one subdivision by code via `CountryCodes.subdivisionFromCode(code)`
 - searching subdivisions via `CountryCodes.searchSubdivisions(query, ...)`
 - reading unique subdivision types via `CountryCodes.subdivisionTypesForCountry(alpha2)`
+- multiple `DialCodeFormatter` configurations (default/separator/forced prefix)

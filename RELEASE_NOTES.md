@@ -1,5 +1,17 @@
 # Release Notes
 
+## 5.1.0 - 2026-03-03
+
+Highlights:
+- Add `CountryCodes.lookupDetails()` returning `CountryLookupResult` with explicit lookup status.
+- Add subdivision discovery helpers: `searchSubdivisions()` and `subdivisionTypesForCountry()`.
+- Extend `DialCodeFormatter` with configurable separator and international-prefix preservation control.
+- Expand tests and example app coverage for all new APIs and formatter modes.
+- Update documentation sections and usage snippets across package and example docs.
+
+Notes:
+- Minor release with additive API changes and no breaking removals.
+
 ## 5.0.5 - 2026-03-03
 
 Highlights:

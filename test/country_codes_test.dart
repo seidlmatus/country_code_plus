@@ -284,5 +284,32 @@ void main() {
       );
       expect(result.text, '+421123');
     });
+
+    test('keeps existing international prefix by default', () {
+      final formatter = DialCodeFormatter(const Locale('sk', 'SK'));
+      final result = formatter.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(text: '+999123'),
+      );
+      expect(result.text, '+999123');
+    });
+
+    test('can override existing international prefix when configured', () {
+      final formatter = DialCodeFormatter(const Locale('sk', 'SK'), '', false);
+      final result = formatter.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(text: '+999123'),
+      );
+      expect(result.text, '+421');
+    });
+
+    test('supports configurable separator between code and value', () {
+      final formatter = DialCodeFormatter(const Locale('sk', 'SK'), ' ');
+      final result = formatter.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(text: '123'),
+      );
+      expect(result.text, '+421 123');
+    });
   });
 }

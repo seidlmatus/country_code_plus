@@ -7,8 +7,14 @@ import 'package:flutter/widgets.dart';
 /// This can be handy to use along with `TextFormFields` that are typically used on phone numbers forms.
 class DialCodeFormatter extends TextInputFormatter {
   final Locale? locale;
+  final String separator;
+  final bool preserveExistingInternationalPrefix;
 
-  DialCodeFormatter([this.locale]);
+  DialCodeFormatter([
+    this.locale,
+    this.separator = '',
+    this.preserveExistingInternationalPrefix = true,
+  ]);
 
   @override
   TextEditingValue formatEditUpdate(
@@ -22,8 +28,13 @@ class DialCodeFormatter extends TextInputFormatter {
       return newValue;
     }
 
+    if (preserveExistingInternationalPrefix && newValue.text.startsWith('+')) {
+      return newValue;
+    }
+
     final String text = newValue.text.contains('+') ? '' : newValue.text;
-    final String nextValue = '$code$text';
+    final String joiner = text.isNotEmpty ? separator : '';
+    final String nextValue = '$code$joiner$text';
     return TextEditingValue(
       text: nextValue,
       selection: TextSelection.collapsed(offset: nextValue.length),

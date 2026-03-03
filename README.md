@@ -16,14 +16,14 @@ A Flutter plugin that provides country details (ISO codes, dial codes, names) ba
 - Access ISO 3166-2 subdivisions for supported countries.
 - Search subdivisions and list subdivision types by country.
 - Optional localized country names with `init`.
-- Input formatter for phone dial codes.
+- Configurable input formatter for phone dial codes.
 
 ## Installation
 Add the dependency in `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  country_codes_plus: ^5.0.5
+  country_codes_plus: ^5.1.0
 ```
 
 Then run:
@@ -153,6 +153,22 @@ if (lookup.isSuccess) {
 TextFormField(
   keyboardType: TextInputType.phone,
   inputFormatters: [DialCodeFormatter()],
+);
+
+TextFormField(
+  keyboardType: TextInputType.phone,
+  inputFormatters: [DialCodeFormatter(const Locale('sk', 'SK'), ' ')],
+);
+
+TextFormField(
+  keyboardType: TextInputType.phone,
+  inputFormatters: [
+    DialCodeFormatter(
+      const Locale('sk', 'SK'),
+      '',
+      false, // force package dial code even if user types another +prefix
+    ),
+  ],
 );
 ```
 

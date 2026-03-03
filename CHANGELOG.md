@@ -1,3 +1,10 @@
+## [5.1.0] - 2026-03-03
+* Add rich locale lookup API: `CountryCodes.lookupDetails()` with explicit success/error status.
+* Add subdivision search helpers: `searchSubdivisions(query, ...)` and `subdivisionTypesForCountry(alpha2)`.
+* Extend `DialCodeFormatter` with configurable separator and optional preservation of user-entered international prefixes.
+* Expand unit tests for new lookup, subdivision, and formatter behaviors.
+* Extend example app and docs to demonstrate all new APIs and formatter variants.
+
 ## [5.0.5] - 2026-03-03
 * Harden `CountryCodes.init()` against null/short/invalid platform payloads and avoid `RangeError`.
 * Add `CountryCodes.detailsForLocaleOrNull()` for null-safe locale resolution while keeping `detailsForLocale()` behavior explicit.
