@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await CountryCodes.init();
+  await CountryCodes.init(const Locale('pt'));
   runApp(CountryCodesExampleApp());
 }
 
@@ -35,8 +35,14 @@ class CountryCodesExampleApp extends StatelessWidget {
           title: const Text('Country codes example app'),
         ),
         body: Builder(builder: (context) {
-          final CountryDetails details = CountryCodes.detailsForLocale();
+          final CountryDetails? details = CountryCodes.detailsForLocaleOrNull();
           final Locale locale = CountryCodes.getDeviceLocale()!;
+          if (details == null) {
+            return const Center(
+              child: Text('Unable to resolve device locale details.'),
+            );
+          }
+
           final String alpha2 = details.alpha2Code!;
           final List<CountrySubdivision> subdivisions =
               CountryCodes.subdivisionsForCountry(alpha2);

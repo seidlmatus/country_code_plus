@@ -13,12 +13,20 @@ class DialCodeFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    final String code = CountryCodes.dialCode(locale)!;
+    final String? code = CountryCodes.dialCode(locale);
+    if (code == null || code.isEmpty) {
+      return newValue;
+    }
+
     if (newValue.text.startsWith(code)) {
       return newValue;
     }
 
     final String text = newValue.text.contains('+') ? '' : newValue.text;
-    return TextEditingValue(text: '$code$text');
+    final String nextValue = '$code$text';
+    return TextEditingValue(
+      text: nextValue,
+      selection: TextSelection.collapsed(offset: nextValue.length),
+    );
   }
 }

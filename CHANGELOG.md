@@ -1,3 +1,12 @@
+## [5.0.5] - 2026-03-03
+* Harden `CountryCodes.init()` against null/short/invalid platform payloads and avoid `RangeError`.
+* Add `CountryCodes.detailsForLocaleOrNull()` for null-safe locale resolution while keeping `detailsForLocale()` behavior explicit.
+* Make `detailsFromAlpha2()` case-insensitive and return clearer `ArgumentError` for unknown codes.
+* Prevent `DialCodeFormatter` crashes when dial code cannot be resolved.
+* Add tests for the new edge cases and null-safe flows.
+* Improve docs and examples for safe initialization/error handling.
+* Add visible Buy Me a Coffee support links to README and example docs.
+
 ## [5.0.4] - 2026-03-01
 * Add Kosovo (`XK`) to the country list returned by `CountryCodes.countryCodes()`.
 * Include Kosovo metadata: alpha-3 `XKX`, dial code `+383`, and locale mapping `sq_XK`.

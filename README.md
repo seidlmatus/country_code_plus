@@ -5,6 +5,9 @@ A Flutter plugin that provides country details (ISO codes, dial codes, names) ba
 [![CI](https://github.com/seidlmatus/country_code_plus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/seidlmatus/country_code_plus/actions/workflows/ci.yml)
 [![pub package](https://img.shields.io/pub/v/country_codes_plus.svg)](https://pub.dev/packages/country_codes_plus)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Buy Me A Coffee](https://img.shields.io/badge/Donate-Buy%20Me%20A%20Coffee-FFDD00?logo=buymeacoffee&logoColor=000000)](https://buymeacoffee.com/seidlmatus2)
+
+> Support development: **[Buy Me a Coffee](https://buymeacoffee.com/seidlmatus2)**
 
 ## Features
 - Resolve country details from device locale or a provided `Locale`.
@@ -18,7 +21,7 @@ Add the dependency in `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  country_codes_plus: ^5.0.4
+  country_codes_plus: ^5.0.5
 ```
 
 Then run:
@@ -42,10 +45,12 @@ flutter pub get
 import 'package:country_codes_plus/country_codes_plus.dart';
 
 Future<void> setup() async {
-  await CountryCodes.init();
+  final initialized = await CountryCodes.init();
+  if (!initialized) return;
 
   final locale = CountryCodes.getDeviceLocale();
   final details = CountryCodes.detailsForLocale();
+  if (locale == null) return;
 
   print(locale); // e.g. en_US
   print(details.alpha2Code); // e.g. US
@@ -64,10 +69,12 @@ import 'package:country_codes_plus/country_codes_plus.dart';
 
 ### Initialize (device locale)
 ```dart
-await CountryCodes.init();
+final initialized = await CountryCodes.init();
+if (!initialized) return;
 
-final Locale deviceLocale = CountryCodes.getDeviceLocale();
+final Locale? deviceLocale = CountryCodes.getDeviceLocale();
 final CountryDetails details = CountryCodes.detailsForLocale();
+if (deviceLocale == null) return;
 
 print(details.alpha2Code); // e.g. US
 print(details.alpha3Code); // e.g. USA
@@ -107,6 +114,11 @@ print(subdivision?.name); // Hlavni mesto Praha
 
 ### Error handling
 ```dart
+final details = CountryCodes.detailsForLocaleOrNull(const Locale('xx', 'YY'));
+if (details == null) {
+  debugPrint('Invalid locale');
+}
+
 final name = CountryCodes.name(
   locale: const Locale('xx', 'YY'),
   onInvalidLocale: () => debugPrint('Invalid locale'),
@@ -133,6 +145,11 @@ TextFormField(
 
 ## Example App
 - See the example app in [`example/`](example).
+
+## Donate
+If this package saves you time, you can support maintenance here:
+
+**[buymeacoffee.com/seidlmatus2](https://buymeacoffee.com/seidlmatus2)**
 
 ## Contributing
 - PRs are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.

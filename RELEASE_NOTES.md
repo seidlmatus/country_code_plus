@@ -1,5 +1,18 @@
 # Release Notes
 
+## 5.0.5 - 2026-03-03
+
+Highlights:
+- Harden `CountryCodes.init()` to safely handle null/short/invalid platform channel payloads.
+- Add `detailsForLocaleOrNull()` as a null-safe lookup API while preserving existing `detailsForLocale()`.
+- Improve `detailsFromAlpha2()` UX with case-insensitive input and clear `ArgumentError` messaging.
+- Prevent `DialCodeFormatter` from crashing when a dial code cannot be resolved.
+- Expand tests for init payload validation, formatter safety, and alpha2 lookup behavior.
+- Improve README/example guidance for safe initialization and add visible donation links.
+
+Notes:
+- Patch release with no breaking API changes.
+
 ## 5.0.4 - 2026-03-01
 
 Highlights:

@@ -3,6 +3,8 @@
 Minimal Flutter app that demonstrates how to initialize `country_codes_plus`
 and display country data resolved from the current locale.
 
+> Support the package: **[Buy Me a Coffee](https://buymeacoffee.com/seidlmatus2)**
+
 ## Run
 
 ```bash

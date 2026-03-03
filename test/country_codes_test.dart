@@ -71,6 +71,12 @@ void main() {
       final details = CountryCodes.detailsForLocale(const Locale('en'));
       expect(details.alpha2Code, 'US');
     });
+
+    test('invalid locale returns null details in null-safe API', () {
+      final details =
+          CountryCodes.detailsForLocaleOrNull(const Locale('xx', 'YY'));
+      expect(details, isNull);
+    });
   });
 
   group('country list', () {
@@ -168,6 +174,57 @@ void main() {
       final details = CountryCodes.detailsForLocale();
       expect(details.alpha2Code, 'US');
       expect(details.localizedName, 'United States');
+    });
+
+    test('init returns false for short platform payload', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        channel,
+        (call) async => ['en'],
+      );
+
+      final ok = await CountryCodes.init();
+      expect(ok, isFalse);
+    });
+  });
+
+  group('details from alpha2', () {
+    test('accepts case-insensitive input', () {
+      final details = CountryCodes.detailsFromAlpha2('sk');
+      expect(details.alpha2Code, 'SK');
+    });
+
+    test('throws an ArgumentError with clear message for unknown code', () {
+      expect(
+        () => CountryCodes.detailsFromAlpha2('??'),
+        throwsA(
+          isA<ArgumentError>().having(
+            (error) => error.message,
+            'message',
+            contains('Unknown ISO 3166-1 alpha-2 code.'),
+          ),
+        ),
+      );
+    });
+  });
+
+  group('dial code formatter', () {
+    test('does not throw when dial code cannot be resolved', () {
+      final formatter = DialCodeFormatter(const Locale('xx', 'YY'));
+      final result = formatter.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(text: '123'),
+      );
+      expect(result.text, '123');
+    });
+
+    test('prefixes a valid dial code', () {
+      final formatter = DialCodeFormatter(const Locale('sk', 'SK'));
+      final result = formatter.formatEditUpdate(
+        const TextEditingValue(text: ''),
+        const TextEditingValue(text: '123'),
+      );
+      expect(result.text, '+421123');
     });
   });
 }
