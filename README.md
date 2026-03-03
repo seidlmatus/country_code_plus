@@ -11,6 +11,7 @@ A Flutter plugin that provides country details (ISO codes, dial codes, names) ba
 
 ## Features
 - Resolve country details from device locale or a provided `Locale`.
+- Use rich lookup status API with `CountryCodes.lookupDetails()`.
 - Access ISO 3166 alpha-2/alpha-3 codes and dial codes.
 - Access ISO 3166-2 subdivisions for supported countries.
 - Optional localized country names with `init`.
@@ -123,6 +124,16 @@ final name = CountryCodes.name(
   locale: const Locale('xx', 'YY'),
   onInvalidLocale: () => debugPrint('Invalid locale'),
 );
+```
+
+### Rich lookup result
+```dart
+final lookup = CountryCodes.lookupDetails(const Locale('sk', 'SK'));
+if (lookup.isSuccess) {
+  print(lookup.details?.name); // Slovakia
+} else {
+  print(lookup.status); // localeUnavailable / countryNotSupported
+}
 ```
 
 ## Formatters

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:country_codes_plus/src/codes.dart';
 import 'package:country_codes_plus/src/country_details.dart';
+import 'package:country_codes_plus/src/country_lookup.dart';
 import 'package:country_codes_plus/src/subdivision_details.dart';
 import 'package:country_codes_plus/src/subdivisions.dart';
 import 'package:country_codes_plus/src/sub_regions.dart';
@@ -198,17 +199,30 @@ class CountryCodes {
   /// "dial_code": "+1",
   /// ```
   static CountryDetails? detailsForLocaleOrNull([Locale? locale]) {
+    return lookupDetails(locale).details;
+  }
+
+  /// Returns a rich lookup result for the given [locale] or current device locale.
+  /// This method never throws.
+  static CountryLookupResult lookupDetails([Locale? locale]) {
+    if (locale == null && _deviceLocale == null) {
+      return CountryLookupResult.localeUnavailable();
+    }
+
     final String? code = _resolveLocale(locale);
     if (code == null) {
-      return null;
+      return CountryLookupResult.localeUnavailable();
     }
 
     final data = codes[code];
     if (data == null) {
-      return null;
+      return CountryLookupResult.countryNotSupported(resolvedAlpha2: code);
     }
 
-    return CountryDetails.fromMap(data, _localizedCountryNames[code]);
+    return CountryLookupResult.success(
+      details: CountryDetails.fromMap(data, _localizedCountryNames[code]),
+      resolvedAlpha2: code,
+    );
   }
 
   /// Returns the `CountryDetails` for the given [locale]. If details cannot be

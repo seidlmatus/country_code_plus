@@ -91,6 +91,34 @@ void main() {
     });
   });
 
+  group('lookup details result', () {
+    test('returns success status for supported locale', () {
+      final result = CountryCodes.lookupDetails(const Locale('sk', 'SK'));
+
+      expect(result.status, CountryLookupStatus.success);
+      expect(result.isSuccess, isTrue);
+      expect(result.resolvedAlpha2, 'SK');
+      expect(result.details?.dialCode, '+421');
+    });
+
+    test('returns localeUnavailable when locale cannot be resolved', () {
+      final result = CountryCodes.lookupDetails();
+
+      expect(result.status, CountryLookupStatus.localeUnavailable);
+      expect(result.isSuccess, isFalse);
+      expect(result.details, isNull);
+    });
+
+    test('returns countryNotSupported for unknown region', () {
+      final result = CountryCodes.lookupDetails(const Locale('xx', 'YY'));
+
+      expect(result.status, CountryLookupStatus.countryNotSupported);
+      expect(result.isSuccess, isFalse);
+      expect(result.resolvedAlpha2, 'YY');
+      expect(result.details, isNull);
+    });
+  });
+
   group('subdivisions', () {
     test('returns all supported subdivisions', () {
       final subdivisions = CountryCodes.subdivisions();

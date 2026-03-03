@@ -35,7 +35,8 @@ class CountryCodesExampleApp extends StatelessWidget {
           title: const Text('Country codes example app'),
         ),
         body: Builder(builder: (context) {
-          final CountryDetails? details = CountryCodes.detailsForLocaleOrNull();
+          final CountryLookupResult lookupResult = CountryCodes.lookupDetails();
+          final CountryDetails? details = lookupResult.details;
           final Locale locale = CountryCodes.getDeviceLocale()!;
           if (details == null) {
             return const Center(
@@ -77,6 +78,9 @@ class CountryCodesExampleApp extends StatelessWidget {
                         title: 'Alpha 2', description: '${details.alpha2Code}'),
                     _buildEntry(
                         title: 'Dial code', description: '${details.dialCode}'),
+                    _buildEntry(
+                        title: 'Lookup status',
+                        description: '${lookupResult.status}'),
                   ],
                 ),
                 const SizedBox(height: 16.0),
