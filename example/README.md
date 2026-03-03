@@ -20,3 +20,5 @@ flutter run
 - resolving country details (`alpha2`, `alpha3`, dial code, name)
 - listing subdivisions via `CountryCodes.subdivisionsForCountry(alpha2)`
 - finding one subdivision by code via `CountryCodes.subdivisionFromCode(code)`
+- searching subdivisions via `CountryCodes.searchSubdivisions(query, ...)`
+- reading unique subdivision types via `CountryCodes.subdivisionTypesForCountry(alpha2)`

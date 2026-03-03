@@ -174,6 +174,52 @@ class CountryCodes {
         .toList();
   }
 
+  /// Searches subdivisions by code, name, or type.
+  /// Optionally scope the search to a single country alpha-2 code.
+  /// Returns at most [limit] entries (default: 20).
+  static List<CountrySubdivision> searchSubdivisions(
+    String query, {
+    String? countryAlpha2,
+    int limit = 20,
+  }) {
+    final normalizedQuery = query.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) {
+      return const [];
+    }
+
+    final source = countryAlpha2 == null
+        ? subdivisions()
+        : subdivisionsForCountry(countryAlpha2);
+
+    final matches = source.where((entry) {
+      final name = entry.name.toLowerCase();
+      final code = entry.code.toLowerCase();
+      final type = entry.type?.toLowerCase() ?? '';
+      return name.contains(normalizedQuery) ||
+          code.contains(normalizedQuery) ||
+          type.contains(normalizedQuery);
+    }).toList();
+
+    matches.sort((a, b) => a.name.compareTo(b.name));
+    if (limit <= 0 || matches.length <= limit) {
+      return matches;
+    }
+    return matches.take(limit).toList();
+  }
+
+  /// Returns sorted unique subdivision types for the given country alpha-2 code.
+  static List<String> subdivisionTypesForCountry(String alpha2) {
+    final types = subdivisionsForCountry(alpha2)
+        .map((entry) => entry.type)
+        .whereType<String>()
+        .map((type) => type.trim())
+        .where((type) => type.isNotEmpty)
+        .toSet()
+        .toList();
+    types.sort();
+    return types;
+  }
+
   /// Returns subdivision details for an ISO 3166-2 subdivision code.
   /// Example: `SK-BL`, `CZ-10`.
   static CountrySubdivision? subdivisionFromCode(String subdivisionCode) {

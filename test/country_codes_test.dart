@@ -161,6 +161,36 @@ void main() {
             returnsNormally);
       }
     });
+
+    test('searches subdivisions globally by name', () {
+      final result = CountryCodes.searchSubdivisions('bratis', limit: 10);
+
+      expect(result, isNotEmpty);
+      expect(result.any((entry) => entry.code == 'SK-BL'), isTrue);
+    });
+
+    test('searches subdivisions in country scope', () {
+      final result = CountryCodes.searchSubdivisions(
+        'praha',
+        countryAlpha2: 'CZ',
+      );
+
+      expect(result, isNotEmpty);
+      expect(result.every((entry) => entry.countryAlpha2Code == 'CZ'), isTrue);
+    });
+
+    test('returns empty search results for empty query', () {
+      final result = CountryCodes.searchSubdivisions('   ');
+      expect(result, isEmpty);
+    });
+
+    test('returns sorted unique subdivision types for country', () {
+      final types = CountryCodes.subdivisionTypesForCountry('SK');
+
+      expect(types, isNotEmpty);
+      expect(types, orderedEquals(types.toList()..sort()));
+      expect(types.toSet().length, types.length);
+    });
   });
 
   group('platform channel', () {

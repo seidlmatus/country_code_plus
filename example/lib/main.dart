@@ -47,6 +47,10 @@ class CountryCodesExampleApp extends StatelessWidget {
           final String alpha2 = details.alpha2Code!;
           final List<CountrySubdivision> subdivisions =
               CountryCodes.subdivisionsForCountry(alpha2);
+          final List<CountrySubdivision> searchPreview =
+              CountryCodes.searchSubdivisions('a', countryAlpha2: alpha2);
+          final List<String> subdivisionTypes =
+              CountryCodes.subdivisionTypesForCountry(alpha2);
           final CountrySubdivision? firstSubdivision = subdivisions.isNotEmpty
               ? CountryCodes.subdivisionFromCode(subdivisions.first.code)
               : null;
@@ -103,6 +107,14 @@ class CountryCodesExampleApp extends StatelessWidget {
                   Text(
                     'Lookup example: ${firstSubdivision.code} -> ${firstSubdivision.name}',
                   ),
+                const SizedBox(height: 12.0),
+                Text(
+                  'Search preview ("a"): ${searchPreview.take(3).map((entry) => entry.code).join(', ')}',
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  'Subdivision types (${subdivisionTypes.length}): ${subdivisionTypes.take(5).join(', ')}',
+                ),
                 const SizedBox(height: 16.0),
                 SizedBox(
                   width: 200.0,

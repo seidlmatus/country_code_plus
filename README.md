@@ -14,6 +14,7 @@ A Flutter plugin that provides country details (ISO codes, dial codes, names) ba
 - Use rich lookup status API with `CountryCodes.lookupDetails()`.
 - Access ISO 3166 alpha-2/alpha-3 codes and dial codes.
 - Access ISO 3166-2 subdivisions for supported countries.
+- Search subdivisions and list subdivision types by country.
 - Optional localized country names with `init`.
 - Input formatter for phone dial codes.
 
@@ -111,6 +112,16 @@ print(skSubdivisions.first.code); // e.g. SK-BL
 
 final subdivision = CountryCodes.subdivisionFromCode('CZ-10');
 print(subdivision?.name); // Hlavni mesto Praha
+
+final matches = CountryCodes.searchSubdivisions(
+  'praha',
+  countryAlpha2: 'CZ',
+  limit: 5,
+);
+print(matches.map((entry) => entry.code).toList());
+
+final skTypes = CountryCodes.subdivisionTypesForCountry('SK');
+print(skTypes); // e.g. [Kraj]
 ```
 
 ### Error handling
