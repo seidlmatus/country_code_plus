@@ -8,7 +8,7 @@ let package = Package(
         .iOS("12.0"),
     ],
     products: [
-        .library(name: "country_codes_plus", targets: ["country_codes_plus"]),
+        .library(name: "country-codes-plus", targets: ["country_codes_plus"]),
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework"),
