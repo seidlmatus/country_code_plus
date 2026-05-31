@@ -11,7 +11,7 @@ void main() {
     test('keys and alpha2 codes match', () {
       for (final entry in codes.entries) {
         final key = entry.key;
-        final data = Map<String, dynamic>.from(entry.value as Map);
+        final data = entry.value;
 
         expect(RegExp(r'^[A-Z]{2}$').hasMatch(key), isTrue,
             reason: 'Invalid key: $key');
@@ -23,8 +23,8 @@ void main() {
       final seen = <String>{};
 
       for (final entry in codes.entries) {
-        final data = Map<String, dynamic>.from(entry.value as Map);
-        final alpha3 = data['alpha3Code'] as String?;
+        final data = entry.value;
+        final alpha3 = data['alpha3Code'];
 
         expect(alpha3, isNotNull,
             reason: 'Missing alpha3Code for ${entry.key}');
@@ -37,8 +37,8 @@ void main() {
 
     test('dial codes are formatted with a leading plus', () {
       for (final entry in codes.entries) {
-        final data = Map<String, dynamic>.from(entry.value as Map);
-        final dial = data['dial_code'] as String?;
+        final data = entry.value;
+        final dial = data['dial_code'];
 
         expect(dial, isNotNull, reason: 'Missing dial_code for ${entry.key}');
         expect(dial, dial!.trim(),
@@ -50,8 +50,8 @@ void main() {
 
     test('country_code values are valid locale tags', () {
       for (final entry in codes.entries) {
-        final data = Map<String, dynamic>.from(entry.value as Map);
-        final countryCode = data['country_code'] as String?;
+        final data = entry.value;
+        final countryCode = data['country_code'];
 
         expect(countryCode, isNotNull,
             reason: 'Missing country_code for ${entry.key}');
@@ -77,6 +77,13 @@ void main() {
           CountryCodes.detailsForLocaleOrNull(const Locale('xx', 'YY'));
       expect(details, isNull);
     });
+
+    test('sub-region locale resolves through fallback mapping', () {
+      final details = CountryCodes.detailsForLocale(const Locale('en', 'AC'));
+
+      expect(details.alpha2Code, 'SH');
+      expect(details.name, 'Saint Helena, Ascension and Tristan da Cunha');
+    });
   });
 
   group('country list', () {
@@ -88,6 +95,29 @@ void main() {
       expect(kosovo.length, 1);
       expect(kosovo.single.name, 'Kosovo');
       expect(kosovo.single.dialCode, '+383');
+    });
+
+    test('allCountries exposes country list alias', () {
+      expect(CountryCodes.allCountries, CountryCodes.countryCodes());
+    });
+
+    test('searches countries by name and ISO codes', () {
+      final byName = CountryCodes.searchCountries('slovak');
+      final byAlpha3 = CountryCodes.searchCountries('svk');
+      final byDialCode = CountryCodes.searchCountries('+421');
+
+      expect(byName.any((country) => country.alpha2Code == 'SK'), isTrue);
+      expect(byAlpha3.map((country) => country.alpha2Code), contains('SK'));
+      expect(byDialCode.map((country) => country.alpha2Code), contains('SK'));
+    });
+
+    test('returns empty country search results for empty query', () {
+      expect(CountryCodes.searchCountries('   '), isEmpty);
+    });
+
+    test('limits country search results when requested', () {
+      final result = CountryCodes.searchCountries('a', limit: 3);
+      expect(result.length, lessThanOrEqualTo(3));
     });
   });
 
@@ -244,6 +274,21 @@ void main() {
       final ok = await CountryCodes.init();
       expect(ok, isFalse);
     });
+
+    test('init resolves empty region from language fallback', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        channel,
+        (call) async => ['pt', ''],
+      );
+
+      final ok = await CountryCodes.init();
+      expect(ok, isTrue);
+
+      final locale = CountryCodes.getDeviceLocale();
+      expect(locale?.languageCode, 'pt');
+      expect(locale?.countryCode, 'PT');
+    });
   });
 
   group('details from alpha2', () {
@@ -263,6 +308,75 @@ void main() {
           ),
         ),
       );
+    });
+  });
+
+  group('additional country lookups', () {
+    test('finds country details from alpha3', () {
+      final details = CountryCodes.detailsFromAlpha3('svk');
+      expect(details.alpha2Code, 'SK');
+      expect(details.dialCode, '+421');
+    });
+
+    test('throws an ArgumentError with clear message for unknown alpha3', () {
+      expect(
+        () => CountryCodes.detailsFromAlpha3('???'),
+        throwsA(
+          isA<ArgumentError>().having(
+            (error) => error.message,
+            'message',
+            contains('Unknown ISO 3166-1 alpha-3 code.'),
+          ),
+        ),
+      );
+    });
+
+    test('finds countries from exact dial code', () {
+      final countries = CountryCodes.countriesFromDialCode('+421');
+
+      expect(countries.length, 1);
+      expect(countries.single.alpha2Code, 'SK');
+    });
+
+    test('supports shared dial codes', () {
+      final countries = CountryCodes.countriesFromDialCode('+1');
+
+      expect(countries.length, greaterThan(1));
+      expect(countries.map((country) => country.alpha2Code), contains('US'));
+    });
+
+    test('returns first country or null from dial code helper', () {
+      expect(CountryCodes.countryFromDialCode('+421')?.alpha2Code, 'SK');
+      expect(CountryCodes.countryFromDialCode('+999999'), isNull);
+    });
+  });
+
+  group('model values', () {
+    test('country details compare by value', () {
+      final first = CountryCodes.detailsFromAlpha2('SK');
+      final second = CountryCodes.detailsFromAlpha3('SVK');
+
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+      expect(first.toString(), contains('alpha2Code: SK'));
+    });
+
+    test('lookup results compare by value', () {
+      final first = CountryCodes.lookupDetails(const Locale('sk', 'SK'));
+      final second = CountryCodes.lookupDetails(const Locale('sk', 'SK'));
+
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+      expect(first.toString(), contains('CountryLookupResult'));
+    });
+
+    test('subdivisions compare by value', () {
+      final first = CountryCodes.subdivisionFromCode('SK-BL');
+      final second = CountryCodes.subdivisionFromCode('sk-bl');
+
+      expect(first, second);
+      expect(first.hashCode, second.hashCode);
+      expect(first.toString(), contains('SK-BL'));
     });
   });
 

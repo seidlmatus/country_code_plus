@@ -56,13 +56,15 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: country_codes_plus
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
       - name: Install Example Dependencies
         run: flutter pub get
-        working-directory: example
+        working-directory: country_codes_plus/example
       - name: Build iOS Example
         run: flutter build ios --no-codesign
-        working-directory: example
+        working-directory: country_codes_plus/example

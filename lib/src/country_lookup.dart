@@ -44,4 +44,25 @@ class CountryLookupResult {
   }
 
   bool get isSuccess => status == CountryLookupStatus.success;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is CountryLookupResult &&
+            other.status == status &&
+            other.details == details &&
+            other.resolvedAlpha2 == resolvedAlpha2;
+  }
+
+  @override
+  int get hashCode => Object.hash(status, details, resolvedAlpha2);
+
+  @override
+  String toString() {
+    return 'CountryLookupResult('
+        'status: $status, '
+        'details: $details, '
+        'resolvedAlpha2: $resolvedAlpha2'
+        ')';
+  }
 }

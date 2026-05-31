@@ -1,3 +1,14 @@
+## [5.1.1] - 2026-05-31
+* Export `CountrySubdivision` from the legacy `country_codes.dart` entrypoint for compatibility with explicit subdivision type annotations.
+* Add country lookup/search helpers: `allCountries`, `searchCountries()`, `detailsFromAlpha3()`, `countriesFromDialCode()`, and `countryFromDialCode()`.
+* Improve global subdivision search performance by reusing cached subdivision objects instead of rebuilding the full dataset for each search.
+* Add value equality, `hashCode`, and `toString()` implementations for public model classes.
+* Tighten country data typing and remove analyzer lint findings.
+* Add tests for legacy subdivision exports, additional country lookup helpers, model value behavior, sub-region locale fallback, and empty-region platform locale fallback.
+* Refresh lockfile metadata for current Flutter/Dart tooling.
+* Fix Swift Package Manager manifests for Flutter's `FlutterFramework` dependency and make iOS CI checkout path match the package identity.
+* Add release process documentation.
+
 ## [5.1.0] - 2026-03-03
 * Add rich locale lookup API: `CountryCodes.lookupDetails()` with explicit success/error status.
 * Add subdivision search helpers: `searchSubdivisions(query, ...)` and `subdivisionTypesForCountry(alpha2)`.
