@@ -33,10 +33,44 @@ class CountryDetails {
 
   CountryDetails.fromMap(Map<String, dynamic> data,
       [String? localizedCountryName])
-      : this.name = data['name'],
-        this.alpha2Code = data['alpha2Code'],
-        this.alpha3Code = data['alpha3Code'],
-        this.dialCode = data['dial_code'],
-        this.countryCode = data['country_code'],
-        this.localizedName = localizedCountryName;
+      : name = data['name'],
+        alpha2Code = data['alpha2Code'],
+        alpha3Code = data['alpha3Code'],
+        dialCode = data['dial_code'],
+        countryCode = data['country_code'],
+        localizedName = localizedCountryName;
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is CountryDetails &&
+            other.dialCode == dialCode &&
+            other.alpha2Code == alpha2Code &&
+            other.alpha3Code == alpha3Code &&
+            other.countryCode == countryCode &&
+            other.name == name &&
+            other.localizedName == localizedName;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        dialCode,
+        alpha2Code,
+        alpha3Code,
+        countryCode,
+        name,
+        localizedName,
+      );
+
+  @override
+  String toString() {
+    return 'CountryDetails('
+        'name: $name, '
+        'alpha2Code: $alpha2Code, '
+        'alpha3Code: $alpha3Code, '
+        'dialCode: $dialCode, '
+        'countryCode: $countryCode, '
+        'localizedName: $localizedName'
+        ')';
+  }
 }

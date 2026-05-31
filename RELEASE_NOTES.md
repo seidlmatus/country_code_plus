@@ -1,5 +1,20 @@
 # Release Notes
 
+## 5.1.1 - 2026-05-31
+
+Highlights:
+- Export `CountrySubdivision` from the legacy `country_codes.dart` entrypoint.
+- Add country lookup/search helpers for alpha-3 codes, dial codes, and country search.
+- Add value equality, `hashCode`, and `toString()` support to public model classes.
+- Reuse cached subdivision objects for global subdivision searches to avoid rebuilding the full dataset on every query.
+- Clean up analyzer findings and tighten country data typing.
+- Add regression coverage for country lookup helpers, model value behavior, legacy entrypoint compatibility, sub-region locale fallback, and empty-region platform responses.
+- Refresh lockfile metadata for current Flutter/Dart tooling.
+- Add release process documentation.
+
+Notes:
+- Patch release with no breaking API changes.
+
 ## 5.1.0 - 2026-03-03
 
 Highlights:

@@ -30,4 +30,27 @@ class CountrySubdivision {
       type: data['type'],
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is CountrySubdivision &&
+            other.code == code &&
+            other.countryAlpha2Code == countryAlpha2Code &&
+            other.name == name &&
+            other.type == type;
+  }
+
+  @override
+  int get hashCode => Object.hash(code, countryAlpha2Code, name, type);
+
+  @override
+  String toString() {
+    return 'CountrySubdivision('
+        'code: $code, '
+        'countryAlpha2Code: $countryAlpha2Code, '
+        'name: $name, '
+        'type: $type'
+        ')';
+  }
 }

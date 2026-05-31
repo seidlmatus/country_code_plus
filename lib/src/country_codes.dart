@@ -18,12 +18,22 @@ class CountryCodes {
     'en': 'US',
   };
 
+  static String _normalizeDialCode(String dialCode) {
+    return dialCode.replaceAll(RegExp(r'\s+'), '');
+  }
+
+  static CountryDetails _detailsFromEntry(
+      MapEntry<String, Map<String, String>> entry) {
+    return CountryDetails.fromMap(
+        entry.value, _localizedCountryNames[entry.key]);
+  }
+
   static String? _resolveLocale(Locale? locale) {
     locale ??= _deviceLocale;
     if (locale == null) {
       assert(false, '''
-         Locale cannot be null. If you are using an iOS simulator, please, make sure you go to region settings and select any country (even if it\'s already selected) because otherwise your country might be null.
-         If you didn\'t provide one, please make sure you call init before using Country Details
+         Locale cannot be null. If you are using an iOS simulator, please, make sure you go to region settings and select any country (even if it's already selected) because otherwise your country might be null.
+         If you didn't provide one, please make sure you call init before using Country Details
         ''');
       return null;
     }
@@ -59,16 +69,16 @@ class CountryCodes {
 
     final languageAsCountry = normalized.toUpperCase();
     if (codes.containsKey(languageAsCountry)) {
-      final data = Map<String, dynamic>.from(codes[languageAsCountry] as Map);
-      final countryCode = data['country_code'] as String?;
+      final data = codes[languageAsCountry];
+      final countryCode = data?['country_code'];
       if (countryCode != null && countryCode.startsWith('${normalized}_')) {
         return languageAsCountry;
       }
     }
 
     for (final entry in codes.entries) {
-      final data = Map<String, dynamic>.from(entry.value as Map);
-      final countryCode = data['country_code'] as String?;
+      final data = entry.value;
+      final countryCode = data['country_code'];
       if (countryCode != null && countryCode.startsWith('${normalized}_')) {
         return entry.key;
       }
@@ -152,10 +162,50 @@ class CountryCodes {
 
   /// A list of country data for every country
   static List<CountryDetails> countryCodes() {
-    return codes.entries
-        .map((entry) => CountryDetails.fromMap(
-            entry.value, _localizedCountryNames[entry.key]))
+    return codes.entries.map(_detailsFromEntry).toList();
+  }
+
+  /// A list of country data for every country.
+  static List<CountryDetails> get allCountries => countryCodes();
+
+  /// Searches countries by name, localized name, ISO codes, locale tag, or dial code.
+  /// Returns at most [limit] entries (default: 20).
+  static List<CountryDetails> searchCountries(String query, {int limit = 20}) {
+    final normalizedQuery = query.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) {
+      return const [];
+    }
+
+    final normalizedDialQuery = _normalizeDialCode(normalizedQuery);
+    final matches = codes.entries
+        .where((entry) {
+          final data = entry.value;
+          final localizedName =
+              _localizedCountryNames[entry.key]?.toLowerCase() ?? '';
+          final values = <String>[
+            data['name']?.toLowerCase() ?? '',
+            localizedName,
+            data['alpha2Code']?.toLowerCase() ?? '',
+            data['alpha3Code']?.toLowerCase() ?? '',
+            data['country_code']?.toLowerCase() ?? '',
+          ];
+
+          final dialCode = data['dial_code'];
+          final normalizedDialCode = dialCode == null
+              ? ''
+              : _normalizeDialCode(dialCode).toLowerCase();
+
+          return values.any((value) => value.contains(normalizedQuery)) ||
+              normalizedDialCode.contains(normalizedDialQuery);
+        })
+        .map(_detailsFromEntry)
         .toList();
+
+    matches.sort((a, b) => (a.name ?? '').compareTo(b.name ?? ''));
+    if (limit <= 0 || matches.length <= limit) {
+      return matches;
+    }
+    return matches.take(limit).toList();
   }
 
   /// Returns a list of subdivisions for the given country alpha-2 code.
@@ -166,12 +216,15 @@ class CountryCodes {
     return entries.map(CountrySubdivision.fromMap).toList();
   }
 
+  static final List<CountrySubdivision> _allSubdivisions = subdivisionsByCountry
+      .values
+      .expand((entries) => entries)
+      .map(CountrySubdivision.fromMap)
+      .toList(growable: false);
+
   /// Returns all available subdivisions across supported countries.
   static List<CountrySubdivision> subdivisions() {
-    return subdivisionsByCountry.values
-        .expand((entries) => entries)
-        .map(CountrySubdivision.fromMap)
-        .toList();
+    return List<CountrySubdivision>.of(_allSubdivisions);
   }
 
   /// Searches subdivisions by code, name, or type.
@@ -188,7 +241,7 @@ class CountryCodes {
     }
 
     final source = countryAlpha2 == null
-        ? subdivisions()
+        ? _allSubdivisions
         : subdivisionsForCountry(countryAlpha2);
 
     final matches = source.where((entry) {
@@ -299,6 +352,53 @@ class CountryCodes {
     return CountryDetails.fromMap(data, _localizedCountryNames[normalized]);
   }
 
+  /// Returns the `CountryDetails` for the given country alpha-3 code.
+  static CountryDetails detailsFromAlpha3(String alpha3) {
+    final normalized = alpha3.trim().toUpperCase();
+    for (final entry in codes.entries) {
+      if (entry.value['alpha3Code'] == normalized) {
+        return _detailsFromEntry(entry);
+      }
+    }
+
+    throw ArgumentError.value(
+      alpha3,
+      'alpha3',
+      'Unknown ISO 3166-1 alpha-3 code.',
+    );
+  }
+
+  /// Returns all countries that match the given dial code.
+  ///
+  /// Dial codes are not unique globally. For example, several countries share
+  /// `+1`, so this method returns every exact match.
+  static List<CountryDetails> countriesFromDialCode(String dialCode) {
+    final normalized = _normalizeDialCode(dialCode.trim());
+    if (normalized.isEmpty) {
+      return const [];
+    }
+
+    return codes.entries
+        .where((entry) {
+          final entryDialCode = entry.value['dial_code'];
+          return entryDialCode != null &&
+              _normalizeDialCode(entryDialCode) == normalized;
+        })
+        .map(_detailsFromEntry)
+        .toList();
+  }
+
+  /// Returns the first country that matches the given dial code, if any.
+  ///
+  /// Use [countriesFromDialCode] when handling shared dial codes such as `+1`.
+  static CountryDetails? countryFromDialCode(String dialCode) {
+    final matches = countriesFromDialCode(dialCode);
+    if (matches.isEmpty) {
+      return null;
+    }
+    return matches.first;
+  }
+
   /// Returns the ISO 3166-1 `alpha2Code` for the given [locale].
   /// If not provided, device's locale will be used instead.
   /// You can read more about ISO 3166-1 codes [here](https://en.wikipedia.org/wiki/ISO_3166-1)
@@ -315,7 +415,7 @@ class CountryCodes {
     return detailsForLocaleOrNull(locale)?.dialCode;
   }
 
-  /// Returns the exended `name` for the given [locale] or if not provided, device's locale.
+  /// Returns the extended `name` for the given [locale] or if not provided, device's locale.
   ///
   /// Example: (`United States`, `Portugal`, etc.)
   static String? name({Locale? locale, VoidCallback? onInvalidLocale}) {

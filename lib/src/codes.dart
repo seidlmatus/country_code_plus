@@ -1,4 +1,4 @@
-const Map<String, dynamic> codes = {
+const Map<String, Map<String, String>> codes = {
   "AF": {
     "name": "Afghanistan",
     "alpha2Code": "AF",
