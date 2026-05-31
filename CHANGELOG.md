@@ -6,6 +6,7 @@
 * Tighten country data typing and remove analyzer lint findings.
 * Add tests for legacy subdivision exports, additional country lookup helpers, model value behavior, sub-region locale fallback, and empty-region platform locale fallback.
 * Refresh lockfile metadata for current Flutter/Dart tooling.
+* Fix Swift Package Manager manifests for Flutter's `FlutterFramework` dependency and make iOS CI checkout path match the package identity.
 * Add release process documentation.
 
 ## [5.1.0] - 2026-03-03

@@ -28,6 +28,7 @@ Status values: `todo`, `in_progress`, `blocked`, `done`.
 | CC-021 | All | API | Add country search and lookup helpers for alpha-3 and dial-code use cases. | done | P2 | | Added `allCountries`, `searchCountries()`, `detailsFromAlpha3()`, `countriesFromDialCode()`, and `countryFromDialCode()`. |
 | CC-022 | All | DX | Add value equality, `hashCode`, and `toString()` to public model classes. | done | P2 | | Implemented for `CountryDetails`, `CountryLookupResult`, and `CountrySubdivision`. |
 | CC-023 | All | Release | Document the release checklist. | done | P3 | | Added `RELEASING.md`. Existing CI/publish workflows already cover checks and publish automation. |
+| CC-024 | iOS/macOS | SPM | Fix Flutter SPM manifest compatibility and iOS CI package identity mismatch. | done | P1 | | Added `FlutterFramework` dependencies to iOS/macOS `Package.swift` files and checked out CI into `country_codes_plus` for the iOS build job. |
 
 ## Completed historical TODO
 

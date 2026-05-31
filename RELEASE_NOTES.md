@@ -10,6 +10,7 @@ Highlights:
 - Clean up analyzer findings and tighten country data typing.
 - Add regression coverage for country lookup helpers, model value behavior, legacy entrypoint compatibility, sub-region locale fallback, and empty-region platform responses.
 - Refresh lockfile metadata for current Flutter/Dart tooling.
+- Fix Swift Package Manager manifests for Flutter's `FlutterFramework` dependency and align the iOS CI checkout path with the package identity.
 - Add release process documentation.
 
 Notes:
