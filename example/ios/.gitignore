@@ -18,6 +18,8 @@ Flutter/App.framework
 Flutter/Flutter.framework
 Flutter/Flutter.podspec
 Flutter/Generated.xcconfig
+Flutter/ephemeral/Packages/
+Flutter/ephemeral/flutter_native_integration.env
 Flutter/app.flx
 Flutter/app.zip
 Flutter/flutter_assets/

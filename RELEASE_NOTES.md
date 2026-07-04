@@ -1,5 +1,19 @@
 # Release Notes
 
+## 5.1.2 - 2026-07-04
+
+Highlights:
+- Update Android build tooling to Kotlin 2.3.20 and migrate the plugin Gradle build to the current Kotlin DSL.
+- Update the example app to Android Gradle Plugin 9.0.1 and Gradle 9.1.0 while retaining Java 17.
+- Refresh locked Flutter test dependencies (`meta` and `test_api`).
+- Remove the obsolete `android.enableR8` option, disable the unused Jetifier compatibility layer, and ignore generated iOS Swift Package Manager files.
+- Replace placeholder iOS and macOS CocoaPods metadata with the package's actual description, homepage, and author.
+- Replace the deprecated iOS simulator `VALID_ARCHS` setting with `EXCLUDED_ARCHS`.
+- Refresh the example's Apple platform projects for current Flutter/Xcode: iOS 13 with UIScene lifecycle and macOS 10.15 with the modern app delegate, plus Swift Package Manager integration on both platforms.
+
+Notes:
+- Patch release with no Dart API changes.
+
 ## 5.1.1 - 2026-05-31
 
 Highlights:

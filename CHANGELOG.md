@@ -1,3 +1,11 @@
+## [5.1.2] - 2026-07-04
+* Update Android tooling to Kotlin 2.3.20 and migrate the plugin Gradle build to the current Kotlin DSL.
+* Update the example app to Android Gradle Plugin 9.0.1 and Gradle 9.1.0.
+* Refresh locked Flutter test dependencies.
+* Remove the obsolete R8 flag, disable the unused Jetifier compatibility layer, and ignore generated iOS Swift Package Manager files.
+* Replace placeholder CocoaPods metadata with package details and modernize the iOS simulator architecture setting.
+* Refresh the iOS and macOS example projects for current Flutter/Xcode, including Swift Package Manager integration, UIScene lifecycle support, and supported deployment targets.
+
 ## [5.1.1] - 2026-05-31
 * Export `CountrySubdivision` from the legacy `country_codes.dart` entrypoint for compatibility with explicit subdivision type annotations.
 * Add country lookup/search helpers: `allCountries`, `searchCountries()`, `detailsFromAlpha3()`, `countriesFromDialCode()`, and `countryFromDialCode()`.
