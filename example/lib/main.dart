@@ -85,6 +85,18 @@ class CountryCodesExampleApp extends StatelessWidget {
                     _buildEntry(
                         title: 'Lookup status',
                         description: '${lookupResult.status}'),
+                    _buildEntry(title: 'Flag', description: details.flagEmoji),
+                    _buildEntry(
+                      title: 'Safe lookup',
+                      description:
+                          '${CountryCodes.detailsFromAlpha2OrNull(alpha2)?.name}',
+                    ),
+                    _buildEntry(
+                      title: 'Phone prefix',
+                      description: CountryCodes.countriesFromPhoneNumber(
+                        '${details.dialCode} 123456',
+                      ).map((entry) => entry.alpha2Code).join(', '),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16.0),

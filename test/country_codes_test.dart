@@ -8,6 +8,25 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('codes map validation', () {
+    test('contains all official ISO alpha-2 codes plus XK', () {
+      const expected = '''AD AE AF AG AI AL AM AO AQ AR AS AT AU AW AX AZ
+BA BB BD BE BF BG BH BI BJ BL BM BN BO BQ BR BS BT BV BW BY BZ
+CA CC CD CF CG CH CI CK CL CM CN CO CR CU CV CW CX CY CZ
+DE DJ DK DM DO DZ EC EE EG EH ER ES ET FI FJ FK FM FO FR GA GB GD GE GF GG GH GI GL GM GN GP GQ GR GS GT GU GW GY
+HK HM HN HR HT HU ID IE IL IM IN IO IQ IR IS IT JE JM JO JP KE KG KH KI KM KN KP KR KW KY KZ
+LA LB LC LI LK LR LS LT LU LV LY
+MA MC MD ME MF MG MH MK ML MM MN MO MP MQ MR MS MT MU MV MW MX MY MZ
+NA NC NE NF NG NI NL NO NP NR NU NZ OM
+PA PE PF PG PH PK PL PM PN PR PS PT PW PY
+QA RE RO RS RU RW
+SA SB SC SD SE SG SH SI SJ SK SL SM SN SO SR SS ST SV SX SY SZ
+TC TD TF TG TH TJ TK TL TM TN TO TR TT TV TW TZ
+UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW''';
+      final expectedCodes = expected.split(RegExp(r'\s+')).toSet()..add('XK');
+      expect(codes.keys.toSet(), expectedCodes);
+      expect(codes.length, 250);
+    });
+
     test('keys and alpha2 codes match', () {
       for (final entry in codes.entries) {
         final key = entry.key;
@@ -62,9 +81,34 @@ void main() {
   });
 
   group('locale fallback', () {
-    test('language-only locale resolves to a matching country', () {
+    test('language-only locale uses deterministic CLDR likely regions', () {
       final details = CountryCodes.detailsForLocale(const Locale('pt'));
-      expect(details.alpha2Code, 'PT');
+      expect(details.alpha2Code, 'BR');
+      expect(
+          CountryCodes.detailsForLocale(const Locale('es')).alpha2Code, 'ES');
+      expect(
+          CountryCodes.detailsForLocale(const Locale('fr')).alpha2Code, 'FR');
+      expect(
+          CountryCodes.detailsForLocale(const Locale('de')).alpha2Code, 'DE');
+      expect(
+          CountryCodes.detailsForLocale(const Locale('nl')).alpha2Code, 'NL');
+      expect(
+          CountryCodes.detailsForLocale(const Locale('ru')).alpha2Code, 'RU');
+      expect(
+          CountryCodes.detailsForLocale(const Locale('ar')).alpha2Code, 'EG');
+    });
+
+    test('script subtags select CLDR likely regions', () {
+      expect(
+          CountryCodes.detailsForLocale(
+            Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+          ).alpha2Code,
+          'CN');
+      expect(
+          CountryCodes.detailsForLocale(
+            Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+          ).alpha2Code,
+          'TW');
     });
 
     test('english language-only locale falls back to US', () {
@@ -76,6 +120,7 @@ void main() {
       final details =
           CountryCodes.detailsForLocaleOrNull(const Locale('xx', 'YY'));
       expect(details, isNull);
+      expect(CountryCodes.detailsForLocaleOrNull(const Locale('xx')), isNull);
     });
 
     test('sub-region locale resolves through fallback mapping', () {
@@ -95,6 +140,9 @@ void main() {
       expect(kosovo.length, 1);
       expect(kosovo.single.name, 'Kosovo');
       expect(kosovo.single.dialCode, '+383');
+      expect(kosovo.single.flagEmoji, '🇽🇰');
+      expect(CountryCodes.detailsFromAlpha2(' ax ').name, 'Åland Islands');
+      expect(CountryCodes.detailsFromAlpha2('sz').name, 'Eswatini');
     });
 
     test('allCountries exposes country list alias', () {
@@ -287,7 +335,7 @@ void main() {
 
       final locale = CountryCodes.getDeviceLocale();
       expect(locale?.languageCode, 'pt');
-      expect(locale?.countryCode, 'PT');
+      expect(locale?.countryCode, 'BR');
     });
   });
 
@@ -331,6 +379,12 @@ void main() {
       );
     });
 
+    test('non-throwing alpha lookups return null for unknown values', () {
+      expect(CountryCodes.detailsFromAlpha2OrNull(' nope '), isNull);
+      expect(CountryCodes.detailsFromAlpha3OrNull('nope'), isNull);
+      expect(CountryCodes.detailsFromAlpha3OrNull(' svk ')?.alpha2Code, 'SK');
+    });
+
     test('finds countries from exact dial code', () {
       final countries = CountryCodes.countriesFromDialCode('+421');
 
@@ -348,6 +402,23 @@ void main() {
     test('returns first country or null from dial code helper', () {
       expect(CountryCodes.countryFromDialCode('+421')?.alpha2Code, 'SK');
       expect(CountryCodes.countryFromDialCode('+999999'), isNull);
+    });
+
+    test('matches phone numbers using the longest dial prefix', () {
+      expect(
+          CountryCodes.countriesFromPhoneNumber('+421 901 123 456')
+              .map((country) => country.alpha2Code),
+          contains('SK'));
+      expect(
+          CountryCodes.countriesFromPhoneNumber('+44 (20) 1234 5678')
+              .map((country) => country.alpha2Code),
+          contains('GB'));
+      expect(
+          CountryCodes.countriesFromPhoneNumber('+1 242 555 1234')
+              .map((country) => country.alpha2Code),
+          contains('BS'));
+      expect(CountryCodes.countriesFromPhoneNumber('421901123456'), isEmpty);
+      expect(CountryCodes.countriesFromPhoneNumber('+999999'), isEmpty);
     });
   });
 

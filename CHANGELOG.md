@@ -168,3 +168,22 @@ Adds license (MIT)
 ## [0.0.1] - 30/01/2020
 
 Initial release. Provides access to `DialCodeFormatter` for `TextFormField`s, `alpha2Code`, `dialCode` and `name`.
+## [5.2.0] - 2026-08-30
+
+### Added
+* Add Web support with browser locale fallback.
+* Add Åland Islands (`AX`) and Eswatini (`SZ`).
+* Add non-throwing alpha-2 and alpha-3 lookup APIs.
+* Add computed country flag emoji and longest-prefix phone-number lookup.
+* Add deterministic country-data completeness validation and provenance docs.
+
+### Changed
+* Use deterministic CLDR likely-region locale resolution, including scripts.
+* Add immutable alpha-3, dial-code, and subdivision indexes.
+* Improve documentation, example guidance, and pub.dev metadata.
+
+### Fixed
+* Fix missing `AX` and `SZ` country data and order-dependent language inference.
+* Fix stale README dependency version.
+
+No intentional breaking public API changes are included.

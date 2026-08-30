@@ -4,6 +4,7 @@ import 'package:country_codes_plus/src/codes.dart';
 import 'package:country_codes_plus/src/country_details.dart';
 import 'package:country_codes_plus/src/country_lookup.dart';
 import 'package:country_codes_plus/src/subdivision_details.dart';
+import 'package:country_codes_plus/src/additional_subdivisions.dart';
 import 'package:country_codes_plus/src/subdivisions.dart';
 import 'package:country_codes_plus/src/sub_regions.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +16,45 @@ class CountryCodes {
   static Map<String, String> _localizedCountryNames = const {};
 
   static const Map<String, String> _languageDefaults = {
+    'ar': 'EG',
+    'de': 'DE',
     'en': 'US',
+    'es': 'ES',
+    'fr': 'FR',
+    'nl': 'NL',
+    'pt': 'BR',
+    'ru': 'RU',
+  };
+  static const Map<String, String> _scriptLanguageDefaults = {
+    'zh_Hans': 'CN',
+    'zh_Hant': 'TW',
+  };
+
+  static final Map<String, Map<String, String>> _byAlpha3 = {
+    for (final entry in codes.entries) entry.value['alpha3Code']!: entry.value,
+  };
+  static final Map<String, List<Map<String, String>>> _byDialCode =
+      _buildDialCodeIndex();
+
+  static Map<String, List<Map<String, String>>> _buildDialCodeIndex() {
+    final index = <String, List<Map<String, String>>>{};
+    for (final data in codes.values) {
+      final dialCode = data['dial_code'];
+      if (dialCode == null) continue;
+      final normalized = _normalizeDialCode(dialCode);
+      (index[normalized] ??= <Map<String, String>>[]).add(data);
+    }
+    return {
+      for (final entry in index.entries)
+        entry.key: List<Map<String, String>>.unmodifiable(entry.value),
+    };
+  }
+
+  static final Map<String, CountrySubdivision> _bySubdivisionCode = {
+    for (final entry in subdivisionsByCode.entries)
+      entry.key: CountrySubdivision.fromMap(entry.value),
+    for (final entries in additionalSubdivisionsByCountry.values)
+      for (final entry in entries) entry.code: entry,
   };
 
   static String _normalizeDialCode(String dialCode) {
@@ -40,15 +79,11 @@ class CountryCodes {
 
     String? countryCode = locale.countryCode?.toUpperCase();
     if (countryCode == null || countryCode.isEmpty) {
-      countryCode = _countryCodeFromLanguage(locale.languageCode) ??
-          _deviceLocale?.countryCode;
+      countryCode =
+          _countryCodeFromLanguage(locale) ?? _deviceLocale?.countryCode;
     }
 
     if (countryCode == null || countryCode.isEmpty) {
-      assert(false, '''
-         Locale country code cannot be null or empty. Provide a locale with a region (e.g. Locale('en', 'US'))
-         or call init() to use the device locale.
-        ''');
       return null;
     }
 
@@ -59,29 +94,18 @@ class CountryCodes {
     return countryCode;
   }
 
-  static String? _countryCodeFromLanguage(String languageCode) {
-    final normalized = languageCode.toLowerCase();
+  static String? _countryCodeFromLanguage(Locale locale) {
+    final normalized = locale.languageCode.toLowerCase();
+    final scriptDefault = locale.scriptCode == null
+        ? null
+        : _scriptLanguageDefaults['${normalized}_${locale.scriptCode}'];
+    if (scriptDefault != null && codes.containsKey(scriptDefault)) {
+      return scriptDefault;
+    }
     final defaultCountry = _languageDefaults[normalized];
 
     if (defaultCountry != null && codes.containsKey(defaultCountry)) {
       return defaultCountry;
-    }
-
-    final languageAsCountry = normalized.toUpperCase();
-    if (codes.containsKey(languageAsCountry)) {
-      final data = codes[languageAsCountry];
-      final countryCode = data?['country_code'];
-      if (countryCode != null && countryCode.startsWith('${normalized}_')) {
-        return languageAsCountry;
-      }
-    }
-
-    for (final entry in codes.entries) {
-      final data = entry.value;
-      final countryCode = data['country_code'];
-      if (countryCode != null && countryCode.startsWith('${normalized}_')) {
-        return entry.key;
-      }
     }
 
     return null;
@@ -102,8 +126,16 @@ class CountryCodes {
   /// ```
   /// This will default to device's language if none is provided.
   static Future<bool> init([Locale? appLocale]) async {
-    final dynamic response =
-        await _channel.invokeMethod('getLocale', appLocale?.toLanguageTag());
+    dynamic response;
+    try {
+      response = await _channel.invokeMethod(
+        'getLocale',
+        appLocale?.toLanguageTag(),
+      );
+    } on MissingPluginException {
+      final locale = WidgetsBinding.instance.platformDispatcher.locale;
+      response = <String>[locale.languageCode, locale.countryCode ?? ''];
+    }
     if (response is! List || response.length < 2) {
       return false;
     }
@@ -118,7 +150,7 @@ class CountryCodes {
     String countryCode = region.trim().toUpperCase();
 
     if (countryCode.isEmpty) {
-      countryCode = _countryCodeFromLanguage(languageCode) ?? '';
+      countryCode = _countryCodeFromLanguage(Locale(languageCode)) ?? '';
     }
 
     if (!codes.containsKey(countryCode)) {
@@ -212,14 +244,21 @@ class CountryCodes {
   /// Codes follow ISO 3166-2 format (e.g. `SK-BL`, `CZ-10`).
   static List<CountrySubdivision> subdivisionsForCountry(String alpha2) {
     final normalizedAlpha2 = alpha2.toUpperCase();
-    final entries = subdivisionsByCountry[normalizedAlpha2] ?? const [];
-    return entries.map(CountrySubdivision.fromMap).toList();
+    final entries = subdivisionsByCountry[normalizedAlpha2];
+    if (entries != null) {
+      return entries.map(CountrySubdivision.fromMap).toList();
+    }
+    return List<CountrySubdivision>.of(
+      additionalSubdivisionsByCountry[normalizedAlpha2] ?? const [],
+    );
   }
 
   static final List<CountrySubdivision> _allSubdivisions = subdivisionsByCountry
       .values
       .expand((entries) => entries)
       .map(CountrySubdivision.fromMap)
+      .followedBy(
+          additionalSubdivisionsByCountry.values.expand((entries) => entries))
       .toList(growable: false);
 
   /// Returns all available subdivisions across supported countries.
@@ -282,7 +321,7 @@ class CountryCodes {
       return null;
     }
 
-    return CountrySubdivision.fromMap(details);
+    return _bySubdivisionCode[normalizedCode];
   }
 
   /// Returns the `CountryDetails` for the given [locale]. If not provided,
@@ -340,25 +379,33 @@ class CountryCodes {
 
   /// Returns the `CountryDetails` for the given country alpha2 code.
   static CountryDetails detailsFromAlpha2(String alpha2) {
+    final details = detailsFromAlpha2OrNull(alpha2);
+    if (details != null) return details;
+    throw ArgumentError.value(
+      alpha2,
+      'alpha2',
+      'Unknown ISO 3166-1 alpha-2 code.',
+    );
+  }
+
+  /// Returns country details for [alpha2], or `null` for invalid input.
+  static CountryDetails? detailsFromAlpha2OrNull(String alpha2) {
     final normalized = alpha2.trim().toUpperCase();
     final data = codes[normalized];
-    if (data == null) {
-      throw ArgumentError.value(
-        alpha2,
-        'alpha2',
-        'Unknown ISO 3166-1 alpha-2 code.',
-      );
-    }
-    return CountryDetails.fromMap(data, _localizedCountryNames[normalized]);
+    return data == null
+        ? null
+        : CountryDetails.fromMap(data, _localizedCountryNames[normalized]);
   }
 
   /// Returns the `CountryDetails` for the given country alpha-3 code.
   static CountryDetails detailsFromAlpha3(String alpha3) {
     final normalized = alpha3.trim().toUpperCase();
-    for (final entry in codes.entries) {
-      if (entry.value['alpha3Code'] == normalized) {
-        return _detailsFromEntry(entry);
-      }
+    final data = _byAlpha3[normalized];
+    if (data != null) {
+      return CountryDetails.fromMap(
+        data,
+        _localizedCountryNames[data['alpha2Code']],
+      );
     }
 
     throw ArgumentError.value(
@@ -366,6 +413,18 @@ class CountryCodes {
       'alpha3',
       'Unknown ISO 3166-1 alpha-3 code.',
     );
+  }
+
+  /// Returns country details for [alpha3], or `null` for invalid input.
+  static CountryDetails? detailsFromAlpha3OrNull(String alpha3) {
+    final normalized = alpha3.trim().toUpperCase();
+    final data = _byAlpha3[normalized];
+    return data == null
+        ? null
+        : CountryDetails.fromMap(
+            data,
+            _localizedCountryNames[data['alpha2Code']],
+          );
   }
 
   /// Returns all countries that match the given dial code.
@@ -378,14 +437,28 @@ class CountryCodes {
       return const [];
     }
 
-    return codes.entries
-        .where((entry) {
-          final entryDialCode = entry.value['dial_code'];
-          return entryDialCode != null &&
-              _normalizeDialCode(entryDialCode) == normalized;
-        })
-        .map(_detailsFromEntry)
+    return (_byDialCode[normalized] ?? const <Map<String, String>>[])
+        .map((data) => CountryDetails.fromMap(
+              data,
+              _localizedCountryNames[data['alpha2Code']],
+            ))
         .toList();
+  }
+
+  /// Returns countries matching the longest international phone prefix.
+  ///
+  /// Formatting characters are ignored and `+` is required. This identifies
+  /// possible countries only; it does not validate a complete phone number.
+  static List<CountryDetails> countriesFromPhoneNumber(String phoneNumber) {
+    final normalized = phoneNumber.replaceAll(RegExp(r'[\s().-]'), '');
+    if (!normalized.startsWith('+') ||
+        !RegExp(r'^\+[0-9]+$').hasMatch(normalized)) {
+      return const [];
+    }
+    final prefixes = _byDialCode.keys.where(normalized.startsWith).toList()
+      ..sort((a, b) => b.length.compareTo(a.length));
+    if (prefixes.isEmpty) return const [];
+    return countriesFromDialCode(prefixes.first);
   }
 
   /// Returns the first country that matches the given dial code, if any.

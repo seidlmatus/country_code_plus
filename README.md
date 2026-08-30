@@ -1,6 +1,6 @@
 # country_codes_plus
 
-A Flutter plugin that provides country details (ISO codes, dial codes, names) based on a `Locale`.
+Lightweight Flutter country and locale utilities with ISO 3166-1/2 codes, calling codes, localized names, device locale detection, and search.
 
 [![CI](https://github.com/seidlmatus/country_code_plus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/seidlmatus/country_code_plus/actions/workflows/ci.yml)
 [![pub package](https://img.shields.io/pub/v/country_codes_plus.svg)](https://pub.dev/packages/country_codes_plus)
@@ -24,7 +24,7 @@ Add the dependency in `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  country_codes_plus: ^5.1.1
+  country_codes_plus: ^5.2.0
 ```
 
 Then run:
@@ -41,7 +41,7 @@ flutter pub get
 | Android | Supported |
 | iOS | Supported |
 | macOS | Supported |
-| Web | Not officially supported (`init` should be avoided on web) |
+| Web | Supported (browser locale fallback; localized names may be unavailable) |
 
 ## Quick Start
 ```dart
@@ -84,6 +84,7 @@ print(details.alpha3Code); // e.g. USA
 print(details.dialCode);   // e.g. +1
 print(details.name);       // e.g. United States
 print(details.localizedName); // localized if init() received an app locale
+print(details.flagEmoji); // 🇺🇸
 ```
 
 ### Use a custom `Locale`
@@ -97,13 +98,22 @@ print(details.name);       // Portugal
 ```
 
 ### Locale without region
-If a `Locale` has no country (e.g. `Locale('en')`), the package tries to infer a country from language.
-English defaults to `US`.
+Language-only locales use deterministic CLDR likely-region defaults (`en` → US,
+`pt` → BR, `es` → ES, and so on). Script subtags distinguish simplified and
+traditional Chinese. Unknown languages return an unsuccessful lookup; no
+country is selected based on generated-map order.
 
 ### Lookup by alpha-2 code
 ```dart
 final CountryDetails sk = CountryCodes.detailsFromAlpha2('SK');
 print(sk.dialCode); // +421
+```
+
+Non-throwing code lookups are available when input is user-provided:
+
+```dart
+final sk = CountryCodes.detailsFromAlpha2OrNull(' sk ');
+final slovakia = CountryCodes.detailsFromAlpha3OrNull('SVK');
 ```
 
 ### Search and lookup countries
@@ -119,7 +129,14 @@ print(slovakia?.alpha2Code); // SK
 
 final sharedDialCodeCountries = CountryCodes.countriesFromDialCode('+1');
 print(sharedDialCodeCountries.map((entry) => entry.alpha2Code).toList());
+
+final phoneMatches = CountryCodes.countriesFromPhoneNumber('+1 242 555 1234');
+// Longest-prefix result: Bahamas (shared codes remain a list).
 ```
+
+Exact dial-code lookup matches a complete stored calling prefix. Phone-number
+lookup strips common formatting and uses the longest matching prefix; it does
+not validate a complete number or replace libphonenumber.
 
 ### Subdivisions (ISO 3166-2)
 ```dart
@@ -189,13 +206,27 @@ TextFormField(
 ```
 
 ## Platform support
-- Android, iOS, macOS: supported
-- Web: not officially supported (avoid calling `init` on web)
+- Android, iOS, macOS, and Web: supported
+- On Web, `init()` uses Flutter's `PlatformDispatcher` when no native channel
+  is available. Browser-localized country names gracefully fall back to the
+  built-in English names.
 - Swift Package Manager manifests are included for iOS and macOS plugin targets.
 
 ## Migration
 - If you are upgrading from `country_codes`, update dependency and imports to `country_codes_plus`.
 - Legacy import `package:country_codes_plus/country_code_plus.dart` remains available as a re-export.
+
+`country_codes_plus` is an independently maintained continuation/fork; it is
+not endorsed by the original `country_codes` maintainer. It adds current data,
+Web support, deterministic locale resolution, indexed lookups, and subdivision
+search while retaining the legacy API surface.
+
+## Data provenance
+
+Country records follow ISO 3166-1, Unicode CLDR, and authoritative calling-code
+assignments. Subdivisions are committed ISO 3166-2 data. See
+[`DATA_PROVENANCE.md`](DATA_PROVENANCE.md) for refresh guidance and the `XK`
+policy.
 
 ## Example App
 - See the example app in [`example/`](example).

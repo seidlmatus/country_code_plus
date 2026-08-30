@@ -83,6 +83,13 @@ const Map<String, Map<String, String>> codes = {
     "country_code": "nl_AW",
     "alpha3Code": "ABW"
   },
+  "AX": {
+    "name": "Åland Islands",
+    "alpha2Code": "AX",
+    "alpha3Code": "ALA",
+    "dial_code": "+358",
+    "country_code": "sv_AX"
+  },
   "AU": {
     "name": "Australia",
     "alpha2Code": "AU",
@@ -1503,6 +1510,13 @@ const Map<String, Map<String, String>> codes = {
     "alpha3Code": "SYR",
     "dial_code": "+963",
     "country_code": "ar_SY"
+  },
+  "SZ": {
+    "name": "Eswatini",
+    "alpha2Code": "SZ",
+    "alpha3Code": "SWZ",
+    "dial_code": "+268",
+    "country_code": "en_SZ"
   },
   "TW": {
     "name": "Taiwan",

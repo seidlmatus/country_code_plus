@@ -31,6 +31,19 @@ class CountryDetails {
   /// DE : Germany
   final String? localizedName;
 
+  /// The Unicode regional-indicator flag emoji for [alpha2Code].
+  ///
+  /// Kosovo (`XK`) uses the commonly supported `🇽🇰` sequence even though it
+  /// is a user-assigned ISO 3166-1 code.
+  String get flagEmoji {
+    final code = alpha2Code?.toUpperCase();
+    if (code == null || code.length != 2) return '';
+    if (!RegExp(r'^[A-Z]{2}$').hasMatch(code)) return '';
+    return String.fromCharCodes(
+      code.codeUnits.map((unit) => 0x1F1E6 + unit - 0x41),
+    );
+  }
+
   CountryDetails.fromMap(Map<String, dynamic> data,
       [String? localizedCountryName])
       : name = data['name'],

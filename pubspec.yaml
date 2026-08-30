@@ -1,9 +1,15 @@
 name: country_codes_plus
-description: Country code plus is a helper package that provides country details given a particular localization, such as dial codes, ISO 3166 codes (alpha-2, alpha-3) and country names.
-version: 5.1.2
+description: Lightweight Flutter country and locale utilities with ISO 3166-1/2 codes, calling codes, localized names, device locale detection, and search.
+version: 5.2.0
 homepage: https://github.com/seidlmatus/country_code_plus
 repository: https://github.com/seidlmatus/country_code_plus
 issue_tracker: https://github.com/seidlmatus/country_code_plus/issues
+topics:
+  - country
+  - country-codes
+  - iso-3166
+  - localization
+  - dial-code
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -11,6 +17,8 @@ environment:
 
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_web_plugins:
     sdk: flutter
 
 dev_dependencies:
@@ -28,3 +36,6 @@ flutter:
         pluginClass: CountryCodesPlugin
       macos:
         pluginClass: CountryCodesPlugin
+      web:
+        fileName: country_codes_plus_web.dart
+        pluginClass: CountryCodesWebPlugin

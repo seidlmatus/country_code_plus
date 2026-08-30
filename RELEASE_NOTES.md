@@ -1,5 +1,12 @@
 # Release Notes
 
+## 5.2.0 - 2026-08-30
+
+This release adds Web support, AX/SZ country data, null-safe code lookups,
+flag emoji, longest-prefix phone-number matching, deterministic CLDR locale
+inference, indexed lookups, integrity validation, and refreshed pub.dev
+metadata/docs. No intentional breaking public API changes were introduced.
+
 ## 5.1.2 - 2026-07-04
 
 Highlights:
