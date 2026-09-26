@@ -45,9 +45,12 @@ jobs:
           channel: stable
           cache: true
       - name: Install Dependencies
-        run: flutter pub get
+        run: |
+          flutter pub get
+          git restore analysis_options.yaml
+          git diff --exit-code
       - name: Validate Package
-        run: flutter pub publish --dry-run --ignore-warnings
+        run: flutter pub publish --dry-run
       - name: Setup pub.dev Credentials
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
@@ -57,4 +60,4 @@ jobs:
           EOF
       - name: Publish Package
         if: startsWith(github.ref, 'refs/tags/v')
-        run: flutter pub publish -f --ignore-warnings
+        run: flutter pub publish -f
