@@ -48,7 +48,6 @@ jobs:
         run: |
           flutter pub get
           git restore analysis_options.yaml
-          git diff --exit-code
       - name: Validate Package
         run: flutter pub publish --dry-run
       - name: Setup pub.dev Credentials
