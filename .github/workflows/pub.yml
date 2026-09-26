@@ -38,8 +38,13 @@ jobs:
     needs: preflight
     runs-on: ubuntu-latest
     environment: pub.dev
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
+      # Configures short-lived pub.dev credentials through GitHub OIDC.
+      - uses: dart-lang/setup-dart@v1
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -50,13 +55,6 @@ jobs:
           git restore analysis_options.yaml
       - name: Validate Package
         run: flutter pub publish --dry-run
-      - name: Setup pub.dev Credentials
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          mkdir -p ~/.pub-cache
-          cat <<EOF > ~/.pub-cache/credentials.json
-          ${{ secrets.PUB_CREDENTIALS_JSON }}
-          EOF
       - name: Publish Package
         if: startsWith(github.ref, 'refs/tags/v')
         run: flutter pub publish -f
