@@ -1,6 +1,6 @@
 name: country_codes_plus
 description: Lightweight Flutter country and locale utilities with ISO 3166-1/2 codes, calling codes, localized names, device locale detection, and search.
-version: 5.2.0
+version: 5.2.1
 homepage: https://github.com/seidlmatus/country_code_plus
 repository: https://github.com/seidlmatus/country_code_plus
 issue_tracker: https://github.com/seidlmatus/country_code_plus/issues

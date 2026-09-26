@@ -1,5 +1,10 @@
 # Release Notes
 
+## 5.2.1 - 2026-09-26
+
+- Correct the Slovak localized name of Greece to `Grécko` when older platform
+  locale data returns the misspelling `Greécko`.
+
 ## 5.2.0 - 2026-08-30
 
 This release adds Web support, AX/SZ country data, null-safe code lookups,
