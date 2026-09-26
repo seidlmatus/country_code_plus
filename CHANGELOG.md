@@ -1,3 +1,6 @@
+## [5.2.1] - 2026-09-26
+* Correct the Slovak localized name of Greece to `Grécko` across supported native platforms.
+
 ## [5.1.2] - 2026-07-04
 * Update Android tooling to Kotlin 2.3.20 and migrate the plugin Gradle build to the current Kotlin DSL.
 * Update the example app to Android Gradle Plugin 9.0.1 and Gradle 9.1.0.

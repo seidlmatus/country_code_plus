@@ -312,6 +312,26 @@ UA UG UM US UY UZ VA VC VE VG VI VN VU WF WS YE YT ZA ZM ZW''';
       expect(details.localizedName, 'United States');
     });
 
+    test('corrects invalid Slovak country names from platform data', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+        channel,
+        (call) async {
+          expect(call.arguments, 'sk-SK');
+          return [
+            'en',
+            'US',
+            {'GR': 'Greécko'}
+          ];
+        },
+      );
+
+      final ok = await CountryCodes.init(const Locale('sk', 'SK'));
+
+      expect(ok, isTrue);
+      expect(CountryCodes.detailsFromAlpha2('GR').localizedName, 'Grécko');
+    });
+
     test('init returns false for short platform payload', () async {
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(

@@ -15,6 +15,13 @@ class CountryCodes {
   static Locale? _deviceLocale;
   static Map<String, String> _localizedCountryNames = const {};
 
+  // Platform locale data can contain version-specific translation mistakes.
+  // Keep this list deliberately small and backed by current CLDR data.
+  static const Map<String, Map<String, String>>
+      _localizedCountryNameCorrections = {
+    'sk': {'GR': 'Grécko'},
+  };
+
   static const Map<String, String> _languageDefaults = {
     'ar': 'EG',
     'de': 'DE',
@@ -170,6 +177,13 @@ class CountryCodes {
                 key.toString().toUpperCase(),
                 value?.toString() ?? '',
               )));
+
+      final displayLanguage =
+          (appLocale?.languageCode ?? languageCode).toLowerCase();
+      final corrections = _localizedCountryNameCorrections[displayLanguage];
+      if (corrections != null) {
+        localizedCountryNames.addAll(corrections);
+      }
     }
 
     _deviceLocale = Locale(languageCode, countryCode);
